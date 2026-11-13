@@ -1,0 +1,20 @@
+# User stories with acceptance criteria
+
+Priority uses MoSCoW. Each story links to a test in `docs/requirements_traceability.md`.
+
+| ID | Story | Acceptance criteria (Given / When / Then) | Priority | Test |
+|---|---|---|---|---|
+| US-01 | As an estimation head, I want every RFQ to have an owner and a due day so that nothing waits unseen. | Given an RFQ email arrives, when it is registered, then it shows owner, due day and age; when it is a day past due, then a reminder is sent and it appears in the daily digest. | Must | AT-12 |
+| US-02 | As an estimator, I want to upload drawings and the Excel part list to the RFQ so that I do not search email. | Given an RFQ, when I upload a file, then it is stored with received time and is visible only to users in that customer group. | Must | AT-12, AT-10 |
+| US-03 | As an estimator, I want AI-read values shown with their source so that I check them before use. | Given an AI-read weight, when it is shown, then it displays its source and confidence; costing is blocked until I accept it; low-confidence or conflicting values cannot be bulk-accepted. | Must | AT-06 |
+| US-04 | As an estimator, I want one screen to cost a part and see three volume prices so that I finish in about an hour. | Given accepted inputs and a valid rate snapshot, when I open the costing screen, then I see the cost breakup and three volume prices; the same inputs always give the same price. | Must | AT-01, AT-02 |
+| US-05 | As a rate owner, I want rates with effective dates so that old quotes keep their rate. | Given a rate with an end date, when a quote is costed on that date, then the old rate is used; on the next day, the new one. Overlapping dates are refused; a missing rate blocks costing with a visible message. | Must | AT-03 |
+| US-06 | As a plant head, I want to review only new or changed routings so that I am not asked about every part. | Given a routing suggestion, when it matches a past part, then it shows the source part; when it is new or the cycle time differs by more than 15% from the match, then it enters my review queue. | Should | AT-07 |
+| US-07 | As a Sales head, I want one card to approve a large quote so that approval takes minutes. | Given a quote above ₹25,00,000 a year, when it is ready, then I see one card with price, margin and risk; ₹25,00,000 exactly needs no approval; an estimator cannot approve; each approval records user and time. | Must | AT-05 |
+| US-08 | As a Sales head, I want a deputy and a reminder so that a quote is not stuck while I am away. | Given an approval pending 4 hours, when I do not respond, then a reminder is sent; after 1 working day, it escalates to the deputy; approval is never automatic. | Should | AT-05 |
+| US-09 | As an estimator, I want a PDF quote from the approved costing so that I do not retype it. | Given an approved quote, when I generate the PDF, then it shows cost breakup, three volume prices, GST as a separate line, Indian digit grouping and the rate version; numbers equal the screen. | Must | AT-09 |
+| US-10 | As an estimation head, I want past quotes searchable so that I can quote similar parts consistently. | Given an import file, when it loads, then imported plus duplicates plus rejected equals the rows in the file and a reject file with reasons can be downloaded. | Should | AT-08 |
+| US-11 | As client IT, I want named users and an audit log so that NDA customer drawings are protected. | Given an unauthenticated visitor, when they open any page, then access is blocked; every drawing view and download is logged. | Must | AT-10 |
+| US-12 | As a managing director, I want the quote to match the Excel the team trusts so that I can retire the Excel. | Given 20 agreed test parts and signed-off rates, when the tool costs them, then each line matches the client's Excel to ₹0.01, and every difference is traced to an agreed rule. | Must | AT-01 |
+
+**Not in scope (Won't have this time):** customer portal, ERP write-back, automatic approval, AI-set prices, multi-plant rates.
