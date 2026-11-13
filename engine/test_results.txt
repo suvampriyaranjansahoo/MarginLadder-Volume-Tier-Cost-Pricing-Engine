@@ -1,0 +1,32 @@
+Reference cost engine v1.0 (illustrative inputs, RFQ-2611-014)
+
+  90000 pcs  net material  45.67  conversion  45.50  cost  103.25  price  117.33  GST  21.12  annual value  10,559,700.00
+ 180000 pcs  net material  45.06  conversion  45.42  cost  102.53  price  116.51  GST  20.97  annual value  20,971,800.00
+ 270000 pcs  net material  44.45  conversion  45.39  cost  101.88  price  115.77  GST  20.84  annual value  31,257,900.00
+
+PASS  T01 price at 90,000 = 117.33
+PASS  T02 price at 180,000 = 116.51
+PASS  T03 price at 270,000 = 115.77
+PASS  T04 annual value at base tier = 2,09,71,800
+PASS  T05 cost lines add up to cost price (all tiers)
+PASS  T06 cost + margin = price (all tiers)
+PASS  T07 price + GST = price incl GST
+PASS  T08 margin is a share of price (about 12%)
+PASS  T09 setup per piece falls as volume rises
+PASS  T10 1,000 repeat runs give one answer
+PASS  T11 last day of a rate uses it (30 Sep -> v16)
+PASS  T12 next day uses the new rate (1 Oct -> v17)
+PASS  T13 missing rate blocks costing
+PASS  T14 overlapping rate dates refused
+PASS  T15 rate of zero refused
+PASS  T16 margin of 100% refused
+PASS  T17 blank cycle time refused, not treated as zero
+PASS  T18 net weight above gross refused
+PASS  T19 zero volume refused
+PASS  T20 old quote keeps its rate version in the snapshot
+PASS  T21 exactly Rs 25,00,000 needs no Sales head
+PASS  T22 Rs 25,00,001 needs the Sales head
+PASS  T23 machining line = 3.2/60 x 850 = 45.33
+PASS  T24 half-up rounding: 0.125 -> 0.13
+
+24/24 tests passed
