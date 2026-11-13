@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MarginLadder Dashboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: brand bar, four hero numbers, tab strip, then a controls rail beside the active panel. Dark-first ink-teal with one amber for emphasis. */
+:root{--bg:#081214;--bg2:#0c1b1d;--panel:#102123;--panel2:#142a2c;--ink:#e6f2f0;--mut:#8fa9a9;--line:#1f3a3b;--grid:#173031;--accent:#4fd1c0;--accent2:#2a8f86;--amber:#f2b155;--bad:#f0806f;--badbg:#3a1f1b;--good:#6fd9a4;--goodbg:#123326;--warn:#f2b155;--warnbg:#38290f;--c1:#4fd1c0;--c2:#f0806f;--c3:#f2b155;--c4:#9fb4ff;--glow:rgba(79,209,192,.16);
+--f-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--f-head:"Space Grotesk","Inter",system-ui,sans-serif;color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef5f5;--bg2:#e6f0f0;--panel:#ffffff;--panel2:#f3f9f8;--ink:#12292a;--mut:#53696a;--line:#d3e0e0;--grid:#e2ecec;--accent:#0f6b66;--accent2:#2f8a8a;--amber:#b36a00;--bad:#a63c32;--badbg:#fbe6e3;--good:#1b6b46;--goodbg:#e0f2e8;--warn:#a96100;--warnbg:#fdf0d8;--c1:#0f6b66;--c2:#c0564a;--c3:#c98318;--c4:#4a5fc1;--glow:rgba(15,107,102,.10);color-scheme:light}}
+:root[data-theme="light"]{--bg:#eef5f5;--bg2:#e6f0f0;--panel:#ffffff;--panel2:#f3f9f8;--ink:#12292a;--mut:#53696a;--line:#d3e0e0;--grid:#e2ecec;--accent:#0f6b66;--accent2:#2f8a8a;--amber:#b36a00;--bad:#a63c32;--badbg:#fbe6e3;--good:#1b6b46;--goodbg:#e0f2e8;--warn:#a96100;--warnbg:#fdf0d8;--c1:#0f6b66;--c2:#c0564a;--c3:#c98318;--c4:#4a5fc1;--glow:rgba(15,107,102,.10);color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 44px;background-image:radial-gradient(900px 300px at 20% -60px,var(--glow),transparent),linear-gradient(var(--grid) 1px,transparent 1px);background-size:auto,100% 44px}
+.wrap{max-width:1200px;margin:0 auto}
+.brand{display:flex;flex-wrap:wrap;gap:12px 20px;justify-content:space-between;align-items:center}
+.logo{display:flex;gap:12px;align-items:center}
+.logo svg{flex:none}
+h1{font-family:var(--f-head);font-size:26px;line-height:1.1;margin:0;letter-spacing:-.01em}
+.sub{color:var(--mut);margin:2px 0 0;font-size:13px;max-width:66ch}
+button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;transition:border-color .15s,background .15s}
+button:hover{border-color:var(--accent)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700}
+.scen{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.scen>span{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;margin-right:2px}
+.hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 14px}
+.h{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0;position:relative;overflow:hidden}
+.h small{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.h b{display:block;font-family:var(--f-head);font-size:34px;line-height:1.1;margin:4px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.h i{display:block;font-style:normal;color:var(--mut);font-size:12.5px}
+.h.main b{color:var(--accent)}
+.gauge{display:flex;align-items:center;gap:10px}.gauge svg{flex:none}
+.gauge b{font-size:30px;margin:0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow-x:auto}
+.tabs button{border:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;background:none;padding:10px 16px;color:var(--mut);font-weight:600;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);background:var(--panel)}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:16px;align-items:start}
+.rail{position:sticky;top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;max-height:calc(100vh - 20px);overflow:auto}
+.rail h2{font-family:var(--f-head);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:14px 0 6px}.rail h2:first-child{margin-top:0}
+.ctl{margin:0 0 9px}.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;line-height:1.3}
+.ctl output{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.tag{font-size:10px;padding:0 6px;border-radius:99px;margin-left:5px;border:1px solid var(--line);color:var(--mut);white-space:nowrap}.tag.a{color:var(--amber);border-color:var(--amber)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0 0}
+.seg{display:flex;gap:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;min-width:0}
+.card h3{font-family:var(--f-head);font-size:17px;margin:0 0 2px}
+.so{color:var(--mut);margin:0 0 8px;font-size:13px}
+.verdict{margin:0 0 14px;padding:11px 14px;border-radius:10px;font-weight:500;background:var(--panel2);border:1px solid var(--line)}
+.verdict.good{background:var(--goodbg);color:var(--good);border-color:transparent}.verdict.warn{background:var(--warnbg);color:var(--warn);border-color:transparent}.verdict.bad{background:var(--badbg);color:var(--bad);border-color:transparent}
+.chart{position:relative;width:100%;min-width:0}
+svg text{fill:var(--mut);font-family:var(--f-body);font-size:11.5px}
+.tip{position:absolute;pointer-events:none;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:12px;white-space:nowrap;transform:translate(-50%,-120%);z-index:2;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--mut);margin-top:4px}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.stack{display:flex;height:40px;border-radius:7px;overflow:hidden;margin:6px 0 2px;color:#06201f;font-weight:700;font-size:12.5px}
+.stack div{display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;padding:0 4px;min-width:0}.stack div:first-child{min-width:46px}
+.cap{font-size:12.5px;color:var(--mut);margin:0 0 8px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}th:first-child,td:first-child{text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut)}
+tr.cur td{background:var(--panel2);font-weight:700}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:6px}.stats div{font-size:12.5px;color:var(--mut)}.stats b{display:block;font-family:var(--f-head);font-size:19px;color:var(--ink)}
+.rule{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px}
+.dot.ok{background:var(--goodbg);color:var(--good)}.dot.no{background:var(--badbg);color:var(--bad)}
+.rule small{display:block;color:var(--mut);font-size:12px}.rule em{font-style:normal;font-variant-numeric:tabular-nums;font-weight:700}
+.rec{font-family:var(--f-head);font-size:24px;margin:2px 0 8px}
+.foot{color:var(--mut);font-size:12.5px;margin-top:8px}
+.sl{display:grid;grid-template-columns:170px minmax(0,1fr) 56px;gap:10px;align-items:center;margin:6px 0;font-size:12.5px}.sl output{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:980px){.hero{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr)}.rail{position:static;max-height:none;order:2}}
+@media (max-width:520px){h1{font-size:22px}.h b{font-size:27px}.sl{grid-template-columns:1fr 56px}.sl span{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head><body>
+
+<div class="wrap">
+<div class="brand">
+ <div class="logo">
+  <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="var(--panel2)" stroke="var(--line)"/><path d="M8 31h8v-6h7v-6h7v-8" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="30" cy="11" r="3" fill="var(--amber)"/></svg>
+  <div><h1>MarginLadder</h1><p class="sub">Business case for an RFQ-to-quote costing app, Pune auto-parts maker. Change any input; every number updates. Tags: Brief = given, Assumption = mine.</p></div>
+ </div>
+ <div class="scen" role="group" aria-label="Win-back scenario"><span>Win-back</span>
+  <button data-s="5" aria-pressed="false">Downside 5%</button><button data-s="12.5" aria-pressed="false">Conservative 12.5%</button><button data-s="25" aria-pressed="true">Base 25%</button><button data-s="50" aria-pressed="false">Upside 50%</button><button id="reset">Reset</button></div>
+</div>
+
+<div class="hero" id="hero">
+ <div class="h main"><small>Margin recovered a year</small><b id="hv1">-</b><i id="hs1"></i></div>
+ <div class="h"><small>Payback on the fee, margin basis</small><b id="hv2">-</b><i id="hs2"></i></div>
+ <div class="h"><small>Break-even win-back</small><b id="hv3">-</b><i id="hs3"></i></div>
+ <div class="h"><small>Chance NPV is positive</small>
+  <div class="gauge"><svg width="96" height="62" viewBox="0 0 120 76" aria-hidden="true"><path d="M12 64A48 48 0 0 1 108 64" fill="none" stroke="var(--line)" stroke-width="11" stroke-linecap="round"/><path id="garc" d="M12 64A48 48 0 0 1 108 64" fill="none" stroke="var(--accent)" stroke-width="11" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8" style="transition:stroke-dashoffset .8s ease,stroke .3s"/></svg><b id="hv4">-</b></div>
+  <i id="hs4"></i></div>
+</div>
+
+<div class="tabs" role="tablist" id="tabs">
+ <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+ <button role="tab" data-tab="risk" aria-selected="false">Risk</button>
+ <button role="tab" data-tab="cash" aria-selected="false">Cash</button>
+ <button role="tab" data-tab="ops" aria-selected="false">Operations</button>
+ <button role="tab" data-tab="decision" aria-selected="false">Decision</button>
+</div>
+
+<div class="layout">
+<aside class="rail" aria-label="Inputs"><div id="ctls"></div>
+ <h2>Invoice payment term</h2>
+ <div class="seg" role="group" aria-label="Payment term"><button data-t="3" aria-pressed="false">3 days</button><button data-t="10" aria-pressed="true">10 days</button></div>
+</aside>
+<main>
+ <div id="verdict" class="verdict" role="status"></div>
+
+ <div id="p_overview">
+  <div class="card"><h3>Does it pay back?</h3><p class="so" id="so1"></p><div class="chart" id="ch1"></div>
+   <div class="legend"><span><b style="background:var(--c1)"></b>Cumulative net cash after the fee</span><span><b style="background:var(--c3)"></b>Payback month</span></div></div>
+  <div class="card"><h3>Four scenarios side by side</h3><p class="so">Uses all your other inputs. The highlighted row is closest to your win-back setting.</p><div class="tw"><table id="tbl"></table></div></div>
+ </div>
+
+ <div id="p_risk" hidden>
+  <div class="card"><h3>What if the assumptions are wrong?</h3><p class="so" id="so2"></p><div class="chart" id="ch2"></div>
+   <div class="stats" id="mcs"></div>
+   <div style="margin-top:12px">
+    <div class="sl"><span>Win-back low</span><input id="r_lo" type="range" min="0" max="25" step="1"><output id="o_lo"></output></div>
+    <div class="sl"><span>Win-back high</span><input id="r_hi" type="range" min="26" max="70" step="1"><output id="o_hi"></output></div>
+    <div class="sl"><span>Spread on the other inputs</span><input id="r_u" type="range" min="0.5" max="2" step="0.1"><output id="o_u"></output></div>
+   </div>
+   <p class="foot">4,000 random runs, fixed seed. Win-back is triangular between low and high with your setting as the most likely value. Lost share ±1.5 points, margin ±3 points, order value ±20% and running cost ±50%, all scaled by the spread slider. These ranges are assumptions.</p></div>
+  <div class="card"><h3>Which input matters most?</h3><p class="so" id="so5"></p><div class="chart" id="ch5"></div></div>
+ </div>
+
+ <div id="p_cash" hidden>
+  <div class="card"><h3>Can we fund the delivery?</h3><p class="so" id="so4"></p><div class="chart" id="ch4"></div>
+   <div class="legend"><span><b style="background:var(--c2)"></b>Cumulative delivery cost</span><span><b style="background:var(--c1)"></b>Cash received before GST</span><span><b style="background:var(--c3)"></b>Peak gap</span></div></div>
+  <div class="card"><h3>Full cash view: tax and working capital</h3><p class="so" id="so8"></p><div class="tw"><table id="fin"></table></div><div class="stats" id="fst"></div>
+   <div style="margin-top:12px"><div class="sl"><span>Tax rate</span><input id="r_tax" type="range" min="0" max="40" step="1"><output id="o_tax"></output></div>
+   <div class="sl"><span>Working-capital days</span><input id="r_nwc" type="range" min="0" max="90" step="5"><output id="o_nwc"></output></div></div>
+   <p class="foot">Extra sales tie up cash in receivables and stock. The fee is capitalised and amortised over 3 years, equity-funded, and working capital is released in year 3. Tax and working-capital days are assumptions. This matches the Financials sheet in the Excel model.</p></div>
+  <div class="card"><h3>Milestones and payment term</h3><p class="so" id="so6"></p><div class="tw"><table id="mst"></table></div></div>
+ </div>
+
+ <div id="p_ops" hidden>
+  <div class="card"><h3>Where the days go</h3><p class="so" id="so3"></p>
+   <div class="cap">Today, 9 working days (Brief)</div><div class="stack" id="stk1"></div>
+   <div class="cap" style="margin-top:12px">Target, 4 working days (Brief)</div><div class="stack" id="stk2"></div></div>
+  <div class="card"><h3>Estimator capacity</h3><p class="so" id="so7"></p><div class="chart" id="ch7"></div></div>
+ </div>
+
+ <div id="p_decision" hidden>
+  <div class="card"><div class="cap">Recommendation from the proposed decision rules</div><div class="rec" id="rec"></div><div id="rules"></div>
+   <p class="foot">The thresholds are my proposed decision rules for this case study, not the client's. Each is a check you can defend or change.</p><p class="foot">Context: Indian auto-component industry turnover was ₹7.60 lakh crore in FY26, up 12.7% (ACMA). Listed peers earned a 13.6% operating margin (Elara Capital, 59 companies); this case uses 12% from the brief.</p></div>
+ </div>
+</main></div></div>
+
+<script>
+const DEF={wb:25,lost:5,margin:12,ov:20,rfq:60,parts:5,ht:2.5,hg:1,rate:450,est:6,prod:160,fee:8,run:2,disc:12,yrs:3,term:10,lo:0,hi:50,unc:1,tax:25,nwc:45};
+const CTL=[
+ ["Revenue case",[["wb","Win-back share of lost RFQs",0,60,0.5,"%","a"],["lost","RFQs lost",1,10,0.5,"%","b"],["margin","Margin on order",5,25,0.5,"%","b"],["ov","Order value per RFQ",5,50,1," lakh","b"],["rfq","RFQs per month",20,120,1,"","b"]]],
+ ["Capacity",[["parts","Parts per RFQ",1,10,1,"","b"],["ht","Hours per part today",1,4,0.1," h","b"],["hg","Hours per part target",0.5,3,0.1," h","b"],["rate","Estimator cost per hour",200,800,10," ₹","b"],["est","Estimators",3,10,1,"","b"],["prod","Productive hours per estimator per month",120,180,5," h","a"]]],
+ ["Project and finance",[["fee","Fixed fee before GST",4,15,0.5," lakh","b"],["run","Running cost per year",0,6,0.25," lakh","a"],["disc","Discount rate",5,20,1,"%","a"],["yrs","Years in the NPV",1,5,1,"","a"]]]];
+let S={...DEF},TAB="overview";
+const $=id=>document.getElementById(id);
+const IN=n=>Math.round(n).toLocaleString("en-IN");
+function lakh(v,d=1){const a=Math.abs(v),sg=v<0?"-":"";if(a>=1e7)return sg+"₹"+(a/1e7).toFixed(2)+" crore";return sg+"₹"+(a/1e5).toFixed(d)+" lakh"}
+const pct=(v,d=1)=>(v*100).toFixed(d)+"%";
+const COST=[68500,110900,136000,124600,109000,121100,52400],SHARE=[.2,.2,.4,.2],INV=[0,15,25,35];
+function compute(s,wbOverride){
+ const wb=(wbOverride??s.wb)/100,fee=s.fee*1e5,run=s.run*1e5,ov=s.ov*1e5,m=s.margin/100,disc=s.disc/100;
+ const rfqY=s.rfq*12,lost=rfqY*s.lost/100,mPer=ov*m,ceil=lost*mPer,rec=ceil*wb,net=rec-run;
+ const payB=rec>0?fee/(rec/12):Infinity,payA=net>0?fee/(net/12):Infinity;
+ const be=fee/ceil,be2=(fee+run)/ceil;
+ let npv=-fee;for(let t=1;t<=s.yrs;t++)npv+=net/Math.pow(1+disc,t);
+ const partsY=s.rfq*s.parts*12,hrs=partsY*(s.ht-s.hg),val=hrs*s.rate;
+ const avail=s.est*s.prod,l0=s.rfq*s.parts*s.ht/avail,l1=s.rfq*s.parts*s.hg/avail;
+ const wd=Math.ceil(s.term*5/7),rc=INV.map((d,i)=>({day:d+(i?wd:0),amt:SHARE[i]*fee,inv:d}));
+ const weeks=[];let cum=0,peak=-Infinity,pw=0;
+ for(let w=0;w<=9;w++){if(w>=1&&w<=7)cum+=COST[w-1];const got=rc.filter(r=>r.day<=w*5).reduce((a,r)=>a+r.amt,0);weeks.push({w,cost:cum,got});if(w>=1&&cum-got>peak){peak=cum-got;pw=w}}
+ return{rfqY,lost,mPer,ceil,rec,net,payB,payA,be,be2,npv,partsY,hrs,val,l0,l1,avail,weeks,peak,pw,fee,run,ov,rc,wd};
+}
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function tri(r,a,m,b){if(b<=a)return m;m=Math.min(Math.max(m,a),b);const u=r(),c=(m-a)/(b-a);return u<c?a+Math.sqrt(u*(b-a)*(m-a)):b-Math.sqrt((1-u)*(b-a)*(b-m))}
+function mc(){
+ const r=mulberry(2611),N=4000,k=S.unc,out=new Float64Array(N);let ann=0;for(let t=1;t<=S.yrs;t++)ann+=1/Math.pow(1+S.disc/100,t);
+ for(let i=0;i<N;i++){
+  const wb=tri(r,Math.min(S.lo,S.wb),S.wb,Math.max(S.hi,S.wb))/100,lost=tri(r,Math.max(.5,S.lost-1.5*k),S.lost,S.lost+1.5*k)/100,mg=tri(r,Math.max(1,S.margin-3*k),S.margin,S.margin+3*k)/100,ov=tri(r,S.ov*(1-.2*k),S.ov,S.ov*(1+.2*k))*1e5,run=tri(r,S.run*(1-.5*k),S.run,S.run*(1+.5*k))*1e5;
+  out[i]=-S.fee*1e5+(S.rfq*12*lost*ov*mg*wb-run)*ann}
+ const a=Array.from(out).sort((x,y)=>x-y),q=p=>a[Math.floor(p*(N-1))];
+ return{a,p10:q(.1),p50:q(.5),p90:q(.9),pos:a.filter(v=>v>0).length/N,min:a[0],max:a[N-1]};
+}
+function tween(el,to,fmt){const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;const from=el._v??0;el._v=to;if(reduce||!isFinite(to)||!isFinite(from)){el.textContent=fmt(to);return}
+ const t0=performance.now(),D=550;cancelAnimationFrame(el._raf);const step=t=>{const p=Math.min((t-t0)/D,1),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)el._raf=requestAnimationFrame(step)};el._raf=requestAnimationFrame(step)}
+function nice(min,max,n=5){if(max===min)max=min+1;const raw=(max-min)/n,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p,st=(f<=1?1:f<=2?2:f<=5?5:10)*p;return{lo:Math.floor(min/st)*st,hi:Math.ceil(max/st)*st,st}}
+function chart(el,o){
+ const W=Math.max(el.clientWidth||600,260),H=o.h||250,L=50,R=14,T=14,B=30;
+ const ys=o.series.flatMap(s=>s.pts.map(p=>p[1]));const ny=nice(Math.min(0,...ys),Math.max(...ys,o.ymax??-Infinity));
+ const xmin=o.xmin,xmax=o.xmax;
+ const sx=x=>L+(x-xmin)/(xmax-xmin)*(W-L-R),sy=y=>T+(1-(y-ny.lo)/(ny.hi-ny.lo))*(H-T-B);
+ let g=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${o.label}">`;
+ for(let y=ny.lo;y<=ny.hi+1e-9;y+=ny.st){const yy=sy(y);g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="${Math.abs(y)<1e-9?"var(--mut)":"var(--grid)"}"/><text x="${L-6}" y="${yy+4}" text-anchor="end">${o.yf(y)}</text>`}
+ (W<420?o.xticks.filter((x,i)=>i%2===0||x===xmax):o.xticks).forEach(x=>{g+=`<text x="${sx(x)}" y="${H-10}" text-anchor="${x===xmax?"end":x===xmin?"start":"middle"}">${o.xf(x)}</text>`});
+ (o.vl||[]).forEach(v=>{const xx=sx(v.x);g+=`<line x1="${xx}" x2="${xx}" y1="${T}" y2="${H-B}" stroke="${v.c}" stroke-dasharray="4 3" stroke-width="1.5"/><text x="${xx+4}" y="${T+10}" style="fill:${v.c}">${v.t}</text>`});
+ o.series.forEach(s=>{let d="";s.pts.forEach((p,i)=>{const X=sx(p[0]),Y=sy(p[1]);d+=!i?`M${X},${Y}`:s.step?`H${X}V${Y}`:`L${X},${Y}`});
+  if(s.area){g+=`<path d="${d}V${sy(0)}H${sx(s.pts[0][0])}Z" fill="${s.c}" opacity=".12"/>`}
+  g+=`<path d="${d}" fill="none" stroke="${s.c}" stroke-width="2.6" stroke-linejoin="round"/>`});
+ (o.marks||[]).forEach(m=>{const X=sx(m.x),Y=sy(m.y);g+=`<circle cx="${X}" cy="${Y}" r="5.5" fill="${m.c}" stroke="var(--panel)" stroke-width="2"/><text x="${X+(m.left?-9:9)}" y="${Y+(m.dy??-8)}" text-anchor="${m.left?"end":"start"}" style="fill:var(--ink);font-weight:700">${m.t}</text>`});
+ g+=`<line id="hv" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="var(--mut)" stroke-width="1" opacity="0"/></svg><div class="tip" style="display:none"></div>`;
+ el.innerHTML=g;
+ const svg=el.querySelector("svg"),tip=el.querySelector(".tip"),hv=svg.querySelector("#hv");
+ svg.addEventListener("mousemove",e=>{const b=svg.getBoundingClientRect(),px=(e.clientX-b.left)*(W/b.width);if(px<L||px>W-R){tip.style.display="none";hv.setAttribute("opacity",0);return}
+  const x=xmin+(px-L)/(W-L-R)*(xmax-xmin);const s0=o.series[0].pts;let best=s0[0];s0.forEach(p=>{if(Math.abs(p[0]-x)<Math.abs(best[0]-x))best=p});
+  const X=sx(best[0]);hv.setAttribute("x1",X);hv.setAttribute("x2",X);hv.setAttribute("opacity",.6);tip.style.display="block";tip.style.left=X+"px";tip.style.top=sy(best[1])+"px";tip.innerHTML=o.tip(best[0],o.series.map(s=>(s.pts.find(p=>p[0]===best[0])||[0,0])[1]))});
+ svg.addEventListener("mouseleave",()=>{tip.style.display="none";hv.setAttribute("opacity",0)});
+}
+function pOverview(r){
+ const mx=36,pts=[];for(let m=0;m<=mx;m++)pts.push([m,-r.fee+r.net*m/12]);
+ const marks=r.payA!==Infinity&&r.payA<=mx?[{x:r.payA,y:0,c:"var(--c3)",t:`Payback ${r.payA.toFixed(1)} mo`,dy:22}]:[];
+ chart($("ch1"),{label:"Cumulative net cash by month",series:[{pts,c:"var(--c1)",area:true}],xmin:0,xmax:mx,xticks:[0,6,12,18,24,30,36],xf:x=>x+" mo",yf:y=>(y/1e5).toFixed(0),marks,tip:(x,v)=>`Month ${x}: <b>${lakh(v[0])}</b>`});
+ const fq=fin(r);$("so1").textContent=r.net>0?`On margin alone, cash turns positive after ${r.payA.toFixed(1)} months. After tax and working capital the full cash payback is ${isFinite(fq.pb)?(fq.pb*12).toFixed(0)+" months":"beyond year 3"} (Cash tab). Axis in ₹ lakh, month 0 is go-live.`:`Net recovered margin is below the running cost, so cash never turns positive.`;
+ const sc=[["Downside",5],["Conservative",12.5],["Base",25],["Upside",50]],near=sc.reduce((a,b)=>Math.abs(b[1]-S.wb)<Math.abs(a[1]-S.wb)?b:a);
+ $("tbl").innerHTML=`<tr><th>Scenario</th><th>Win-back</th><th>Recovered a year</th><th>Payback</th><th>NPV</th></tr>`+sc.map(x=>{const q=compute(S,x[1]);return`<tr class="${x===near?"cur":""}"><td>${x[0]}</td><td>${x[1]}%</td><td>${lakh(q.rec)}</td><td>${q.payA===Infinity?"never":q.payA.toFixed(1)+" mo"}</td><td>${lakh(q.npv)}</td></tr>`}).join("");
+}
+function hist(el,m,W){
+ const H=260,L=44,R=12,T=34,B=30,nb=36,lo=Math.floor(m.min/1e5/10)*10*1e5,hi=Math.ceil(m.max/1e5/10)*10*1e5,bw=(hi-lo)/nb,cnt=new Array(nb).fill(0);
+ m.a.forEach(v=>{cnt[Math.min(nb-1,Math.floor((v-lo)/bw))]++});const mxc=Math.max(...cnt);
+ const sx=v=>L+(v-lo)/(hi-lo)*(W-L-R),sy=c=>T+(1-c/mxc)*(H-T-B);
+ let g=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Distribution of NPV across 4000 runs">`;
+ cnt.forEach((c,i)=>{const x0=lo+i*bw,mid=x0+bw/2;g+=`<rect x="${sx(x0)+.5}" y="${sy(c)}" width="${Math.max(sx(x0+bw)-sx(x0)-1,1)}" height="${H-B-sy(c)}" fill="${mid<0?"var(--c2)":"var(--c1)"}" opacity=".9" rx="2"/>`});
+ const tk=nice(lo/1e5,hi/1e5,6);for(let v=tk.lo;v<=tk.hi+1e-9;v+=tk.st){if(v*1e5<lo-1||v*1e5>hi+1)continue;g+=`<text x="${sx(v*1e5)}" y="${H-10}" text-anchor="middle">${v.toFixed(0)}</text>`}
+ g+=`<line x1="${sx(0)}" x2="${sx(0)}" y1="${T}" y2="${H-B}" stroke="var(--ink)" stroke-width="1.5"/><text x="${sx(0)+4}" y="${T+8}" style="fill:var(--ink)">NPV 0</text>`;
+ [["P10",m.p10],["P50",m.p50],["P90",m.p90]].forEach(([t,v])=>{g+=`<line x1="${sx(v)}" x2="${sx(v)}" y1="${T-10}" y2="${H-B}" stroke="var(--c3)" stroke-dasharray="4 3"/><text x="${sx(v)}" y="${T-14}" text-anchor="middle" style="fill:var(--c3);font-weight:700">${t}</text>`});
+ el.innerHTML=g+`<text x="${L}" y="${H-1}">NPV in ₹ lakh</text></svg>`;
+}
+function pRisk(r){
+ const m=mc(),W=Math.max($("ch2").clientWidth||600,260);hist($("ch2"),m,W);
+ $("mcs").innerHTML=[["Chance NPV is positive",pct(m.pos,0)],["P10 (bad case)",lakh(m.p10)],["Median",lakh(m.p50)],["P90 (good case)",lakh(m.p90)]].map(x=>`<div>${x[0]}<b>${x[1]}</b></div>`).join("");
+ $("so2").textContent=`Across 4,000 runs, NPV is positive in ${pct(m.pos,0)} of them. One run in ten is worse than ${lakh(m.p10)}. Red bars are losses.`;
+ $("o_lo").textContent=S.lo+"%";$("o_hi").textContent=S.hi+"%";$("o_u").textContent="×"+S.unc.toFixed(1);
+ const keys=[["wb","Win-back"],["lost","RFQs lost"],["margin","Margin"],["ov","Order value"],["rfq","RFQs per month"],["run","Running cost"],["disc","Discount rate"]];
+ const base=r.npv,rows=keys.map(([k,l])=>{const a=compute({...S,[k]:S[k]*0.8}).npv,b=compute({...S,[k]:S[k]*1.2}).npv;return{l,a,b,sw:Math.abs(b-a)}}).sort((x,y)=>y.sw-x.sw);
+ const el=$("ch5"),W2=Math.max(el.clientWidth||600,260),rh=30,H=rows.length*rh+40,L=104,R=60;
+ const lo=Math.min(base,...rows.flatMap(x=>[x.a,x.b])),hi=Math.max(base,...rows.flatMap(x=>[x.a,x.b])),sx=v=>L+60+(v-lo)/(hi-lo||1)*(W2-L-R-60);
+ let g=`<svg viewBox="0 0 ${W2} ${H}" width="${W2}" height="${H}" role="img" aria-label="Tornado chart of NPV sensitivity">`;
+ rows.forEach((x,i)=>{const y=16+i*rh,x1=sx(Math.min(x.a,x.b)),x2=sx(Math.max(x.a,x.b));
+  g+=`<text x="${L-8}" y="${y+16}" text-anchor="end" style="fill:var(--ink)">${x.l}</text><rect x="${x1}" y="${y+3}" width="${Math.max(x2-x1,2)}" height="${rh-10}" rx="4" fill="var(--c1)" opacity=".85"/>`;
+  g+=`<text x="${x2+5}" y="${y+16}">${lakh(Math.max(x.a,x.b),0)}</text><text x="${x1-5}" y="${y+16}" text-anchor="end">${lakh(Math.min(x.a,x.b),0)}</text>`});
+ g+=`<line x1="${sx(base)}" x2="${sx(base)}" y1="6" y2="${H-24}" stroke="var(--c3)" stroke-width="2"/><text x="${sx(base)}" y="${H-8}" text-anchor="middle" style="fill:var(--c3);font-weight:700">Base ${lakh(base)}</text></svg>`;
+ el.innerHTML=g;
+ $("so5").textContent=`Each bar moves one input by -20% and +20% and shows the NPV range. ${rows[0].l} swings it most, so test it first.`;
+}
+function irr(f){let lo=-0.99,hi=10;const v=r=>f.reduce((a,c,i)=>a+c/Math.pow(1+r,i),0);if(v(lo)*v(hi)>0)return NaN;for(let i=0;i<80;i++){const m=(lo+hi)/2;if(v(lo)*v(m)<=0)hi=m;else lo=m}return(lo+hi)/2}
+function fin(r){
+ const rev=r.lost*S.wb/100*r.ov,am=r.fee/3,ebitda=r.rec-r.run,ebit=ebitda-am,tax=Math.max(0,ebit)*S.tax/100,ni=ebit-tax,wc=rev*S.nwc/365;
+ const fcf=[-r.fee,ni+am-wc,ni+am,ni+am+wc],cum=[],d=S.disc/100;let c=0;fcf.forEach(x=>{c+=x;cum.push(c)});
+ const npv=fcf.reduce((a,x,i)=>a+x/Math.pow(1+d,i),0);let pb=NaN;
+ if(cum[0]>=0)pb=0;else if(cum[1]>=0)pb=-cum[0]/fcf[1];else if(cum[2]>=0)pb=1-cum[1]/fcf[2];else if(cum[3]>=0)pb=2-cum[2]/fcf[3];
+ return{rev,ebitda,tax,ni,wc,fcf,cum,npv,pb,irr:irr(fcf),irr2:irr([fcf[0],fcf[1],fcf[2],fcf[3]-wc]),need:Math.min(...cum)};
+}
+function pCash(r){
+ const cp=r.weeks.map(w=>[w.w,w.cost]),gp=r.weeks.map(w=>[w.w,w.got]);
+ chart($("ch4"),{label:"Cost versus cash received by week",series:[{pts:cp,c:"var(--c2)"},{pts:gp,c:"var(--c1)",step:true}],xmin:0,xmax:9,xticks:[0,1,2,3,4,5,6,7,8,9],xf:x=>"W"+x,yf:y=>(y/1e5).toFixed(0),ymax:r.fee*1.1,marks:[{x:r.pw,y:r.weeks[r.pw].cost,c:"var(--c3)",t:`Gap ${lakh(r.peak)}`,left:true,dy:-10}],tip:(x,v)=>`Week ${x}: cost <b>${lakh(v[0])}</b>, received <b>${lakh(v[1])}</b>`});
+ $("so4").textContent=`Cash arrives ${S.term} days after each invoice (the first at signing). The funded gap peaks at ${lakh(r.peak)} (${(r.peak/r.fee*100).toFixed(0)}% of the fee) in week ${r.pw}. Axis in ₹ lakh.`;
+ const q=fin(r),Y=["Year 0","Year 1","Year 2","Year 3"],row=(n,a,bold)=>`<tr${bold?' class="cur"':""}><td>${n}</td>${a.map(x=>`<td>${lakh(x,1)}</td>`).join("")}</tr>`;
+ $("fin").innerHTML=`<tr><th>₹ lakh</th>${Y.map(y=>`<th>${y}</th>`).join("")}</tr>`+row("Incremental revenue",[0,q.rev,q.rev,q.rev])+row("EBITDA",[0,q.ebitda,q.ebitda,q.ebitda])+row("Tax",[0,-q.tax,-q.tax,-q.tax])+row("Net income",[0,q.ni,q.ni,q.ni])+row("Working capital change",[0,-q.wc,0,q.wc])+row("Free cash flow",q.fcf,true)+row("Cumulative",q.cum);
+ $("fst").innerHTML=[["IRR, 3 years",isFinite(q.irr)?pct(q.irr,0):"n/a"],["IRR with no working-capital release",isFinite(q.irr2)?pct(q.irr2,0):"n/a"],["NPV",lakh(q.npv)],["Payback, full cash view",isFinite(q.pb)?(q.pb*12).toFixed(0)+" months":"after year 3"],["Deepest cash need",lakh(q.need)]].map(x=>`<div>${x[0]}<b>${x[1]}</b></div>`).join("");
+ $("so8").textContent=`On margin alone payback is ${r.payA===Infinity?"never":r.payA.toFixed(1)+" months"}. After tax and the cash tied up in extra sales it is ${isFinite(q.pb)?(q.pb*12).toFixed(0)+" months":"beyond year 3"}, and cash needs reach ${lakh(-q.need)} before turning positive. This is the number a finance reader should quote.`;
+ $("o_tax").textContent=S.tax+"%";$("o_nwc").textContent=S.nwc+" days";
+ const a=compute({...S,term:3}),b=compute({...S,term:10});
+ $("mst").innerHTML=`<tr><th>Milestone</th><th>Share</th><th>Invoice day</th><th>Cash arrives day</th><th>Amount</th></tr>`+["M1 signing","M2 Gate 2 (design, formulas, Early Release)","M3 Gate 3 (build delivered)","M4 Gate 4 (final acceptance)"].map((n,i)=>`<tr><td>${n}</td><td>${SHARE[i]*100}%</td><td>${r.rc[i].inv}</td><td>${r.rc[i].day}</td><td>${lakh(r.rc[i].amt,2)}</td></tr>`).join("");
+ $("so6").textContent=`Peak funded gap is ${lakh(a.peak)} at 3-day terms and ${lakh(b.peak)} at 10-day terms. Paying 3 days faster saves ${lakh(b.peak-a.peak)} of funding. Delivery cost is fixed at ₹7,22,500 (24 person-weeks); the fee slider changes cash in only.`;
+}
+function pOps(r){
+ const c0=S.parts*S.ht/8,c1=S.parts*S.hg/8;
+ $("stk1").innerHTML=`<div style="background:var(--c1);width:${c0/9*100}%">costing ${c0.toFixed(2)}</div><div style="background:var(--c2);width:${(1-c0/9)*100}%">waiting, checks, approval, send ${(9-c0).toFixed(2)}</div>`;
+ $("stk2").innerHTML=`<div style="background:var(--c1);width:${c1/9*100}%">${c1.toFixed(2)}</div><div style="background:var(--accent2);width:${(4-c1)/9*100}%;color:#fff">elsewhere ${(4-c1).toFixed(2)}</div>`;
+ $("so3").textContent=`Costing is ${c0.toFixed(2)} of 9 days (${(c0/9*100).toFixed(0)}%), so ${(100-c0/9*100).toFixed(0)}% of the cycle is not hands-on. A faster costing screen closes ${(c0-c1).toFixed(2)} of the 5-day gap. The other ${(5-(c0-c1)).toFixed(2)} days must come from the register, clock, routing queue and approval rule. 8-hour working day.`;
+ const pts=[];for(let h=0.5;h<=4.001;h+=0.1)pts.push([+h.toFixed(1),S.rfq*S.parts*h/r.avail*100]);
+ chart($("ch7"),{label:"Estimator load by hours per part",series:[{pts,c:"var(--c1)",area:true}],xmin:0.5,xmax:4,xticks:[0.5,1,1.5,2,2.5,3,3.5,4],xf:x=>x+" h",yf:y=>y.toFixed(0)+"%",vl:[{x:S.hg,c:"var(--c3)",t:"target"},{x:S.ht,c:"var(--c2)",t:"today"}],marks:[{x:S.ht,y:r.l0*100,c:"var(--c2)",t:pct(r.l0,0),left:true,dy:-10},{x:S.hg,y:r.l1*100,c:"var(--c3)",t:pct(r.l1,0),dy:-10}],ymax:110,tip:(x,v)=>`${x} h a part: <b>${v[0].toFixed(0)}%</b> load`});
+ $("so7").textContent=`${S.est} estimators give ${IN(r.avail)} productive hours a month. At ${S.ht} h a part the team runs at ${pct(r.l0,0)}; at ${S.hg} h it drops to ${pct(r.l1,0)}. Freed time is ${IN(r.hrs)} h a year (${lakh(r.val)}), counted as upside only.`;
+}
+function pDecision(r){
+ const m=mc(),costShare=S.parts*S.ht/8/9;
+ const rules=[
+  ["Hands-on costing is under 40% of the 9-day cycle",costShare<.4,pct(costShare,0),"If over 40%, cut scope to the costing screen and engine"],
+  ["Win-back setting is above break-even (after running cost)",S.wb/100>=r.be2,`${S.wb}% vs ${pct(r.be2)}`,"Below it, the fee is not recovered in year 1"],
+  ["Margin payback is within 12 months",r.payA<=12,r.payA===Infinity?"never":r.payA.toFixed(1)+" mo","Longer than a year makes the case depend on unproven win-back"],
+  ["Full cash payback (after tax and working capital) is within 24 months",isFinite(fin(r).pb)&&fin(r).pb*12<=24,isFinite(fin(r).pb)?(fin(r).pb*12).toFixed(0)+" mo":"n/a","Margin-only payback ignores the cash tied up in extra sales"],
+  ["NPV is positive in at least 80% of simulated runs",m.pos>=.8,pct(m.pos,0),"Tests the case against wrong assumptions"],
+  ["Peak funded gap is at most half the fee",r.peak<=r.fee/2,pct(r.peak/r.fee,0),"We fund delivery before cash arrives"]];
+ const ok=rules.filter(x=>x[1]).length;
+ $("rules").innerHTML=rules.map(x=>`<div class="rule"><span class="dot ${x[1]?"ok":"no"}">${x[1]?"✓":"✕"}</span><div>${x[0]}<small>${x[3]}</small></div><em>${x[2]}</em></div>`).join("");
+ const rec=$("rec");
+ if(ok===rules.length){rec.textContent="Go, in two steps";rec.style.color="var(--good)"}
+ else if(ok>=4){rec.textContent="Go only after the open checks pass";rec.style.color="var(--warn)"}
+ else{rec.textContent="Do not fund the full build";rec.style.color="var(--bad)"}
+}
+function render(){
+ const r=compute(S);
+ tween($("hv1"),r.rec,v=>lakh(v));$("hs1").textContent=`${r.lost.toFixed(0)} lost RFQs × ${lakh(r.mPer,1)} × ${S.wb}%`;
+ if(r.payA===Infinity){$("hv2").textContent="never";$("hv2")._v=0}else tween($("hv2"),r.payA,v=>v.toFixed(1)+" mo");$("hs2").textContent=r.payB===Infinity?"no recovered margin":`${r.payB.toFixed(1)} months before running cost`;
+ tween($("hv3"),r.be2*100,v=>v.toFixed(1)+"%");$("hs3").textContent=`${pct(r.be)} before running cost`;
+ const m=mc(),g=$("garc");g.style.strokeDashoffset=150.8*(1-m.pos);g.style.stroke=m.pos>=.8?"var(--accent)":m.pos>=.5?"var(--amber)":"var(--bad)";
+ tween($("hv4"),m.pos*100,v=>v.toFixed(0)+"%");$("hs4").textContent=`${S.yrs}-year NPV, 4,000 runs; median ${lakh(m.p50)}`;
+ const v=$("verdict"),pb=r.payA===Infinity?"never":r.payA.toFixed(1)+" months";
+ if(S.wb/100<r.be){v.className="verdict bad";v.textContent=`Below break-even: ${S.wb}% win-back is under the ${pct(r.be)} needed to cover the fee in year 1. On cash alone the project loses money.`}
+ else if(r.payA>12){v.className="verdict warn";v.textContent=`Marginal: payback takes ${pb}, longer than a year. The case depends on a win-back that is not yet proven.`}
+ else{v.className="verdict good";{const fq=fin(r);v.textContent=`Pays back in ${pb} on margin alone, and in ${isFinite(fq.pb)?(fq.pb*12).toFixed(0)+" months":"more than 3 years"} after tax and working capital. Break-even win-back is ${pct(r.be2)}, so the assumption can be wrong by half and the fee is still recovered.`}}
+ document.querySelectorAll("[data-s]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.s)===S.wb)));
+ document.querySelectorAll("[data-t]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.t)===S.term)));
+ renderPanel(r);
+}
+function renderPanel(r){r=r||compute(S);({overview:pOverview,risk:pRisk,cash:pCash,ops:pOps,decision:pDecision})[TAB](r)}
+function showTab(t,skip){if(!["overview","risk","cash","ops","decision"].includes(t))t="overview";TAB=t;
+ ["overview","risk","cash","ops","decision"].forEach(x=>{$("p_"+x).hidden=x!==t});
+ document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
+ renderPanel();if(!skip){try{history.replaceState(null,"","#"+t)}catch(e){}}}
+function build(){
+ $("ctls").innerHTML=CTL.map(([h,items])=>`<h2>${h}</h2>`+items.map(([id,lab,mn,mx,st,u,t])=>`<div class="ctl"><label for="i_${id}"><span>${lab}<span class="tag ${t==="a"?"a":""}">${t==="a"?"Assumption":"Brief"}</span></span><output id="o_${id}"></output></label><input id="i_${id}" type="range" min="${mn}" max="${mx}" step="${st}"></div>`).join("")).join("");
+ CTL.forEach(([h,items])=>items.forEach(([id])=>{const i=$("i_"+id);i.addEventListener("input",()=>{S[id]=Number(i.value);sync();render()})}));
+ [["r_lo","lo"],["r_hi","hi"],["r_u","unc"],["r_tax","tax"],["r_nwc","nwc"]].forEach(([id,k])=>{$(id).addEventListener("input",()=>{S[k]=Number($(id).value);syncR();render()})});
+}
+function sync(){CTL.forEach(([h,items])=>items.forEach(([id,lab,mn,mx,st,u])=>{$("i_"+id).value=S[id];$("o_"+id).textContent=(u===" ₹"?"₹"+S[id]:S[id]+(u==="%"?"%":u))}))}
+function syncR(){$("r_lo").value=S.lo;$("r_hi").value=S.hi;$("r_u").value=S.unc;$("r_tax").value=S.tax;$("r_nwc").value=S.nwc}
+build();sync();syncR();
+document.querySelectorAll("[data-s]").forEach(b=>b.addEventListener("click",()=>{S.wb=Number(b.dataset.s);sync();render()}));
+document.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{S.term=Number(b.dataset.t);render()}));
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+$("reset").addEventListener("click",()=>{S={...DEF};sync();syncR();render()});
+addEventListener("hashchange",()=>showTab(location.hash.slice(1),true));
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>renderPanel(),120)});
+render();if(location.hash.length>1)showTab(location.hash.slice(1),true);
+</script>
+</body></html>

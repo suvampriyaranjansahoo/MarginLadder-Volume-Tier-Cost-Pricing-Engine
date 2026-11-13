@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Costing screen prototype</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1b2130;--muted:#5a6475;--rule:#e2e6ec;--accent:#0f6b64;--accent-soft:#e6f2f1;--warn:#9a5b00;--warn-soft:#fbf1dd;--bad:#a13232;--bad-soft:#f8e4e4}
+@media (prefers-color-scheme:dark){:root{--bg:#12161d;--card:#1a2029;--ink:#e8ecf2;--muted:#9aa5b5;--rule:#2b3341;--accent:#4fb8ae;--accent-soft:#16312f;--warn:#e0b25a;--warn-soft:#3a2f16;--bad:#e58a8a;--bad-soft:#3b1f1f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--muted);margin:0 0 10px}
+.banner{background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:13px}
+.clock{display:flex;flex-wrap:wrap;gap:8px 18px;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:10px 14px;margin-bottom:12px}
+.clock div{min-width:120px}.clock b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.chip{display:inline-block;border-radius:10px;padding:0 8px;font-size:12px;font-weight:600;background:var(--warn-soft);color:var(--warn)}
+.chip.g{background:var(--accent-soft);color:var(--accent)}.chip.r{background:var(--bad-soft);color:var(--bad)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:12px 14px}
+.card h2{font-size:14px;margin:0 0 8px}
+.row{display:grid;grid-template-columns:1.25fr 1fr auto;gap:6px;align-items:center;margin:5px 0}
+.row label{color:var(--muted);font-size:13px}
+input,select{width:100%;padding:5px 7px;border:1px solid var(--rule);border-radius:5px;background:var(--bg);color:var(--ink);font:inherit}
+input.ai{border-color:#e0b25a;background:var(--warn-soft)}
+input.acc{border-color:var(--accent);background:var(--accent-soft)}
+button{font:inherit;border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:5px;padding:4px 10px;cursor:pointer}
+button.p{background:var(--accent);border-color:var(--accent);color:#fff}
+button:disabled{opacity:.45;cursor:not-allowed}
+.src{font-size:11px;color:var(--muted);grid-column:1/-1;margin:-3px 0 2px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:4px 6px;border-bottom:1px solid var(--rule);text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.t td{font-weight:700;border-top:1.5px solid var(--ink)}
+tr.hl td{background:var(--accent-soft);font-weight:700}
+.msg{padding:8px 10px;border-radius:6px;margin-top:8px;font-size:13px}
+.msg.ok{background:var(--accent-soft);color:var(--accent)}.msg.warn{background:var(--warn-soft);color:var(--warn)}.msg.bad{background:var(--bad-soft);color:var(--bad)}
+.small{font-size:12px;color:var(--muted)}
+.tiers td.v{cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Costing screen prototype</h1>
+  <p class="sub">RFQ-2611-014 · Company B (two-wheelers) · Rear wheel spindle · EN8</p>
+  <div class="banner">Take-home prototype. Gross weight, annual volume, cycle time and hour rate are from the client brief. Every other value (material rates, scrap credit, setup, rejection, overhead, packing, freight, margin, GST) is illustrative, not Company A's data. All cost maths uses fixed formulas; nothing here uses AI to calculate a price.</div>
+
+  <div class="clock" aria-label="RFQ clock">
+    <div><b>Owner</b>Estimator 2</div>
+    <div><b>Due</b>Day 4 of 4</div>
+    <div><b>Age</b>Day 2</div>
+    <div><b>Waiting on</b><span class="chip" id="waiting">Estimator accepts values</span></div>
+    <div><b>Rate version</b>v17 · effective 1 Oct 2026 to 31 Mar 2027 (illustrative)</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1. Part details <span class="small">(AI proposes, the estimator accepts)</span></h2>
+      <div id="aifields"></div>
+      <div class="row"><label></label><span></span><button id="bulk" title="Accepts only high-confidence values">Accept all high confidence</button></div>
+      <h2 style="margin-top:12px">2. Rates and inputs</h2>
+      <div id="plain"></div>
+      <div id="msg"></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>3. Cost breakup per piece (₹)</h2>
+        <table id="breakup"></table>
+        <div id="approval"></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h2>4. Three volume prices (click a row to load it)</h2>
+        <table class="tiers" id="tiers"></table>
+        <p class="small">Material rate by tier is illustrative (₹79, ₹78, ₹77 per kg). Setup is spread over a batch of annual volume ÷ 12.</p>
+        <div id="selftest"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ---- fixed-formula engine (same formulas as reference_engine/cost_engine.py) ----
+function r2(x){ return Math.round(Number((x*100).toPrecision(12))) / 100; }
+function cost(p){
+  const material=r2(p.gross*p.matRate), scrap=r2((p.gross-p.net)*p.scrapCredit), netMat=r2(material-scrap);
+  const machining=r2(p.cycle/60*p.hourRate), setup=r2((p.setupMin/60*p.hourRate)/(p.volume/12));
+  const conv=r2(machining+setup), rejection=r2(p.reject*(netMat+conv)), overhead=r2(p.overhead*conv);
+  const packing=r2(p.packing), freight=r2(p.freightKg*p.net);
+  const total=r2(netMat+conv+rejection+overhead+packing+freight);
+  const price=r2(total/(1-p.margin)), margin=r2(price-total), gst=r2(price*p.gst);
+  return {material,scrap,netMat,machining,setup,conv,rejection,overhead,packing,freight,total,margin,price,gst,incl:r2(price+gst),annual:r2(price*p.volume)};
+}
+function inr(n,d=2){ const neg=n<0; n=Math.abs(n); let [i,f]=n.toFixed(d).split('.'); let h=i.slice(0,-3),t=i.slice(-3);
+  if(i.length>3){ h=h.replace(/\B(?=(\d{2})+(?!\d))/g,','); i=h+','+t; } return (neg?'-':'')+'₹'+i+(d?'.'+f:''); }
+
+// ---- state ----
+const AI=[ // [key,label,value,source,confidence]
+ ['gross','Gross weight (kg)',0.61,'Source: drawing title block, high confidence','high'],
+ ['cycle','Cycle time (min)',3.2,'Source: Excel part list, row 14, high confidence','high'],
+ ['net','Net weight (kg)',0.52,'Source: drawing says 0.52; email says 0.58. Conflict, low confidence','low']];
+const PLAIN=[
+ ['volume','Annual volume (pieces)',180000],['matRate','Material rate (₹/kg)',78],['scrapCredit','Scrap credit (₹/kg of chip)',28],
+ ['hourRate','Hour rate, spindle (₹/hour)',850],['setupMin','Setup (minutes per batch)',90],['reject','Rejection (share)',0.015],
+ ['overhead','Overhead (share of conversion)',0.15],['packing','Packing (₹ per piece)',1.8],['freightKg','Freight (₹/kg of net)',4],
+ ['margin','Margin (share of selling price)',0.12],['gst','GST rate',0.18],['threshold','Approval line (₹ a year per RFQ)',2500000]];
+const accepted={gross:false,cycle:false,net:false};
+const vals={}; AI.forEach(a=>vals[a[0]]=a[2]); PLAIN.forEach(a=>vals[a[0]]=a[2]);
+const TIERS=[[90000,79],[180000,78],[270000,77]];
+
+function build(){
+  const A=document.getElementById('aifields'); A.innerHTML='';
+  AI.forEach(([k,l,v,s,c])=>{ const d=document.createElement('div'); d.className='row';
+    d.innerHTML=`<label for="${k}">${l}</label><input id="${k}" type="number" step="any" value="${v}" class="ai"><button data-k="${k}">Accept</button><div class="src">${s} <span class="chip ${c==='high'?'g':'r'}">${c}</span></div>`;
+    A.appendChild(d); });
+  const P=document.getElementById('plain'); P.innerHTML='';
+  PLAIN.forEach(([k,l,v])=>{ const d=document.createElement('div'); d.className='row'; d.innerHTML=`<label for="${k}">${l}</label><input id="${k}" type="number" step="any" value="${v}"><span></span>`; P.appendChild(d); });
+  document.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{ vals[i.id]=parseFloat(i.value); if(accepted[i.id]!==undefined){accepted[i.id]=false; i.className='ai';} render(); }));
+  document.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k; accepted[k]=true; document.getElementById(k).className='acc'; render(); }));
+  document.getElementById('bulk').addEventListener('click',()=>{ AI.forEach(a=>{ if(a[4]==='high'){accepted[a[0]]=true; document.getElementById(a[0]).className='acc';} }); render(); });
+}
+function valid(){ const m=[];
+  if(!(vals.net<=vals.gross)) m.push('Net weight is above gross weight. Fix the weights before costing.');
+  if(!(vals.margin>=0&&vals.margin<1)) m.push('Margin must be at least 0% and below 100%.');
+  ['gross','net','cycle','volume','matRate','hourRate'].forEach(k=>{ if(!(vals[k]>0)) m.push('A required value is missing or zero: '+k+'.'); });
+  return m; }
+function render(){
+  const unacc=AI.filter(a=>!accepted[a[0]]); const errs=valid();
+  document.querySelectorAll('button[data-k]').forEach(b=>{ b.disabled=accepted[b.dataset.k]; b.textContent=accepted[b.dataset.k]?'Accepted':'Accept'; });
+  const msg=document.getElementById('msg'), bt=document.getElementById('breakup'), ap=document.getElementById('approval');
+  document.getElementById('waiting').textContent=unacc.length?'Estimator accepts values':(errs.length?'Estimator fixes inputs':'Approval check');
+  if(unacc.length||errs.length){
+    msg.innerHTML='<div class="msg '+(errs.length?'bad':'warn')+'">'+(errs.length?errs.join('<br>'):'Costing is blocked until you accept '+unacc.length+' value'+(unacc.length>1?'s':'')+'. Low-confidence values cannot be accepted in bulk: check them against the drawing.')+'</div>';
+    bt.innerHTML='<tr><td class="small">No price is shown until every AI-prefilled value is accepted and the inputs are valid.</td></tr>'; ap.innerHTML=''; }
+  else {
+    msg.innerHTML='<div class="msg ok">All values accepted. The price below uses the rate snapshot v17 and is stored with the quote.</div>';
+    const c=cost(vals);
+    const L=[['Material (gross × rate)',c.material],['less scrap credit',-c.scrap],['Net material',c.netMat],['Machining',c.machining],['Setup per piece',c.setup],['Conversion cost',c.conv],['Rejection',c.rejection],['Overhead',c.overhead],['Packing',c.packing],['Freight',c.freight]];
+    bt.innerHTML='<thead><tr><th>Line</th><th class="n">₹ per piece</th></tr></thead><tbody>'+L.map(([a,b])=>`<tr><td>${a}</td><td class="n">${inr(b)}</td></tr>`).join('')+
+     `<tr class="t"><td>Cost price</td><td class="n">${inr(c.total)}</td></tr><tr><td>Margin</td><td class="n">${inr(c.margin)}</td></tr><tr class="hl"><td>Selling price</td><td class="n">${inr(c.price)}</td></tr><tr><td>GST (shown separately)</td><td class="n">${inr(c.gst)}</td></tr><tr><td>Price including GST</td><td class="n">${inr(c.incl)}</td></tr><tr><td>Annual value at this volume</td><td class="n">${inr(c.annual,0)}</td></tr></tbody>`;
+    const need=c.annual>vals.threshold;
+    ap.innerHTML=`<div class="msg ${need?'warn':'ok'}">${need?'Annual value is above '+inr(vals.threshold,0)+'. The Sales head or the named deputy must approve this quote before it is sent.':'Annual value is at or below '+inr(vals.threshold,0)+'. The estimator may send after the plant-head check.'}</div>`; }
+  const T=document.getElementById('tiers');
+  T.innerHTML='<thead><tr><th>Annual volume</th><th class="n">Selling price</th><th class="n">GST</th><th class="n">Annual value</th></tr></thead><tbody>'+
+    TIERS.map(([v,m])=>{ const c=cost({...vals,volume:v,matRate:m}); return `<tr class="${v===vals.volume&&m===vals.matRate?'hl':''}" data-v="${v}" data-m="${m}" style="cursor:pointer"><td>${v.toLocaleString('en-IN')}</td><td class="n">${inr(c.price)}</td><td class="n">${inr(c.gst)}</td><td class="n">${inr(c.annual,0)}</td></tr>`; }).join('')+'</tbody>';
+  T.querySelectorAll('tr[data-v]').forEach(r=>r.addEventListener('click',()=>{ vals.volume=+r.dataset.v; vals.matRate=+r.dataset.m; document.getElementById('volume').value=vals.volume; document.getElementById('matRate').value=vals.matRate; render(); }));
+}
+function selftest(){
+  const exp={90000:117.33,180000:116.51,270000:115.77}; let ok=true; const base={}; AI.forEach(a=>base[a[0]]=a[2]); PLAIN.forEach(a=>base[a[0]]=a[2]);
+  TIERS.forEach(([v,m])=>{ if(cost({...base,volume:v,matRate:m}).price!==exp[v]) ok=false; });
+  document.getElementById('selftest').innerHTML='<div class="msg '+(ok?'ok':'bad')+'">Self-test: '+(ok?'prices match the reference engine (₹117.33, ₹116.51, ₹115.77).':'prices do NOT match the reference engine.')+'</div>';
+  return ok; }
+build(); render(); window.__selftest=selftest(); window.__cost=cost;
+</script>
+</body>
+</html>

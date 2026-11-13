@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Approval card prototype</title>
+<style>
+:root{--ink:#1d2b2b;--mut:#5b6f70;--line:#d6e0e0;--teal:#0f5c5c;--tealbg:#e6f3f2;--amb:#9a5b00;--ambbg:#fdf0d8;--red:#a63c32;--redbg:#fbe6e3;--bg:#f5f8f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 2px}.sub{color:var(--mut);margin:0 0 14px}
+.note{background:var(--ambbg);color:var(--amb);border-radius:8px;padding:10px 12px;font-size:13.5px;margin-bottom:14px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.bar label{font-weight:600}select,input,textarea,button{font:inherit}
+select,input,textarea{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:#fff}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}
+.top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:600}
+.p-wait{background:var(--ambbg);color:var(--amb)}.p-ok{background:var(--tealbg);color:var(--teal)}.p-no{background:var(--redbg);color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px}.kpi small{display:block;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;font-size:11.5px}.kpi b{font-size:21px}
+.checks{margin:0;padding:0;list-style:none}.checks li{padding:6px 0;border-top:1px solid var(--line);display:flex;gap:8px}.checks li:first-child{border-top:0}
+.tick{color:var(--teal);font-weight:700}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 16px;cursor:pointer}
+button.pri{background:var(--teal);color:#fff;border-color:var(--teal);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+.msg{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:14px;display:none}
+.timer{color:var(--mut);font-size:13.5px;margin-top:10px}
+.box{margin-top:18px}.box h2{font-size:16px;margin:0 0 6px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<h1>Approval card</h1>
+<p class="sub">RFQ-2611-014 · Company B (two-wheelers) · Rear wheel spindle · EN8</p>
+<div class="note">Take-home prototype. Volume, weight, cycle time and hour rate are from the client brief. Rates, margin and prices are illustrative, not Company A's data. Nothing here sets a price with AI.</div>
+<div class="bar"><label for="role">Signed in as</label>
+<select id="role"><option value="est">Estimator 2</option><option value="sales">Sales head</option><option value="dep">Deputy (Plant head)</option></select>
+<span class="pill p-wait" id="state">Waiting for the Sales head</span></div>
+
+<div class="card">
+<div class="top"><div><b>Quote for approval</b><div class="sub" style="margin:0">Costed by Estimator 2 · rate version v17 · formula v1.0</div></div>
+<div class="timer" id="timer">Pending 1 h 20 min. Reminder at 4 h. Escalates to the deputy after 1 working day. Never approved automatically.</div></div>
+<div class="grid">
+<div class="kpi"><small>Annual value</small><b id="val">₹2,09,71,800</b><div class="sub" style="margin:0">180,000 pieces × ₹116.51</div></div>
+<div class="kpi"><small>Margin</small><b>12.0%</b><div class="sub" style="margin:0">about ₹25.2 lakh a year</div></div>
+<div class="kpi"><small>Approval line</small><b>₹25,00,000</b><div class="sub" style="margin:0">strictly above needs the Sales head</div></div></div>
+<ul class="checks">
+<li><span class="tick">✓</span><span>3 of 3 AI-read values accepted by a person (weight, cycle time, net weight).</span></li>
+<li><span class="tick">✓</span><span>Routing matches a past part; cycle time within 15%, so no plant-head review was needed.</span></li>
+<li><span class="tick">✓</span><span>Three volume prices: ₹117.33 at 90,000, ₹116.51 at 1,80,000, ₹115.77 at 2,70,000.</span></li>
+<li><span class="tick">✓</span><span>Price equals the reference engine; quote is saved as a snapshot and cannot change if a rate changes.</span></li></ul>
+<div class="actions"><button class="pri" id="ok">Approve</button><button id="back">Send back with a reason</button><button id="del">Hand to deputy</button></div>
+<div id="reasonbox" style="display:none;margin-top:10px"><textarea id="reason" rows="2" style="width:100%" placeholder="Reason (required)"></textarea><button id="send" style="margin-top:6px">Send back</button></div>
+<div class="msg" id="msg"></div>
+</div>
+
+<div class="box card"><h2>Boundary check (AT-05)</h2>
+<p class="sub" style="margin:0 0 8px">Type an annual value in rupees. Exactly ₹25,00,000 needs no Sales head. ₹25,00,001 does.</p>
+<input id="bv" type="number" value="2500000" style="width:180px"> <span class="pill" id="bres"></span></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);let done=false;const log=[];
+function fmt(n){return n.toLocaleString("en-IN")}
+function show(t,cls){const m=$("msg");m.style.display="block";m.className="msg";m.style.background=cls==="no"?"var(--redbg)":"var(--tealbg)";m.style.color=cls==="no"?"var(--red)":"var(--teal)";m.textContent=t}
+function now(){return new Date().toLocaleString("en-IN",{hour12:false})}
+function sync(){const r=$("role").value;const can=(r==="sales"||r==="dep")&&!done;$("ok").disabled=!can;$("back").disabled=!can;$("del").disabled=!(r==="sales")||done;
+ if(r==="est"&&!done)show("An estimator cannot approve. Only the Sales head or the named deputy can.","no")}
+$("role").onchange=()=>{$("msg").style.display="none";sync()};
+$("ok").onclick=()=>{done=true;const who=$("role").selectedOptions[0].text;log.push(`Approved by ${who} at ${now()}`);$("state").className="pill p-ok";$("state").textContent="Approved";show("Approved. Recorded: "+log[log.length-1]+". PDF quote can now be generated.");sync()};
+$("back").onclick=()=>{$("reasonbox").style.display="block"};
+$("send").onclick=()=>{const t=$("reason").value.trim();if(!t){show("A reason is required.","no");return}done=true;$("state").className="pill p-no";$("state").textContent="Sent back";show(`Sent back to Estimator 2 with reason: "${t}" at ${now()}`,"ok");$("reasonbox").style.display="none";sync()};
+$("del").onclick=()=>{show("Handed to the deputy. The deputy can approve; the hand-over is logged.")};
+function bc(){const v=Number($("bv").value);const need=v>2500000;$("bres").className="pill "+(need?"p-wait":"p-ok");$("bres").textContent=need?"₹"+fmt(v)+": needs the Sales head":"₹"+fmt(v)+": no Sales head needed"}
+$("bv").oninput=bc;bc();sync();
+</script></body></html>
