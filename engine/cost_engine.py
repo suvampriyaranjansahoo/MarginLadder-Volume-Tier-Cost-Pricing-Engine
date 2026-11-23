@@ -57,16 +57,35 @@ class RateMaster:
 
 def cost_part(p, master, quote_date, volume):
     """Cost one part at one annual volume. p holds estimator-accepted inputs."""
-    for k in ("gross", "net", "cycle_min", "setup_min"):
-        if p.get(k) is None or D(str(p[k])) < 0 or (k in ("gross", "net", "cycle_min") and D(str(p[k])) == 0):
-            raise CostError(f"{k}: missing or not valid")
-    volume = D(str(volume))
+    def numeric(key: str, default=None) -> D:
+        raw = p.get(key, default)
+        if raw is None or str(raw).strip() == "":
+            raise CostError(f"non-numeric costing input: {key} is required")
+        try:
+            value = D(str(raw))
+        except Exception as exc:
+            raise CostError(f"non-numeric costing input: {key} must be a finite number") from exc
+        if not value.is_finite():
+            raise CostError(f"non-numeric costing input: {key} must be a finite number")
+        return value
+
+    volume = numeric("annual_volume", volume)
     if volume <= 0:
         raise CostError("annual volume must be above zero")
-    gross, net = D(str(p["gross"])), D(str(p["net"]))
+    gross, net = numeric("gross"), numeric("net")
+    for key in ("cycle_min", "setup_min", "scrap_credit", "overhead", "packing", "freight_per_kg"):
+        value = numeric(key)
+        if value < 0 or (key in ("gross", "net", "cycle_min") and value == 0):
+            raise CostError(f"{key}: must be non-negative (and positive where required)")
+    reject = numeric("reject")
+    if not D(0) <= reject < D(1):
+        raise CostError("reject: must be between 0% inclusive and 100% exclusive")
+    gst_rate = numeric("gst", "0.18")
+    if not D(0) <= gst_rate <= D(1):
+        raise CostError("gst: must be between 0% and 100%")
     if net > gross:
         raise CostError("net weight exceeds gross weight")
-    m = D(str(p["margin"]))
+    m = numeric("margin")
     if not (D(0) <= m < D(1)):
         raise CostError("margin must be at least 0 and below 100%")
     mat = master.lookup(p["mat_code"], quote_date)
@@ -74,19 +93,19 @@ def cost_part(p, master, quote_date, volume):
 
     # Each line is rounded half-up to 0.01; totals are sums of rounded lines (R-02).
     material = r2(gross * mat.value)
-    scrap = r2((gross - net) * D(str(p["scrap_credit"])))
+    scrap = r2((gross - net) * numeric("scrap_credit"))
     net_material = material - scrap
-    machining = r2(D(str(p["cycle_min"])) / 60 * mc.value)
-    setup = r2((D(str(p["setup_min"])) / 60 * mc.value) / (volume / BATCHES_PER_YEAR))
+    machining = r2(numeric("cycle_min") / 60 * mc.value)
+    setup = r2((numeric("setup_min") / 60 * mc.value) / (volume / BATCHES_PER_YEAR))
     conversion = machining + setup
-    rejection = r2(D(str(p["reject"])) * (net_material + conversion))
-    overhead = r2(D(str(p["overhead"])) * conversion)
-    packing = r2(D(str(p["packing"])))
-    freight = r2(D(str(p["freight_per_kg"])) * net)
+    rejection = r2(reject * (net_material + conversion))
+    overhead = r2(numeric("overhead") * conversion)
+    packing = r2(numeric("packing"))
+    freight = r2(numeric("freight_per_kg") * net)
     cost = net_material + conversion + rejection + overhead + packing + freight
     price = r2(cost / (1 - m))            # margin is a share of selling price
     margin = price - cost
-    gst = r2(price * D(str(p.get("gst", "0.18"))))
+    gst = r2(price * gst_rate)
     return {
         "material": material, "scrap_credit": scrap, "net_material": net_material,
         "machining": machining, "setup": setup, "conversion": conversion,

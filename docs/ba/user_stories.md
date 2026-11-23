@@ -1,6 +1,6 @@
 # User stories with acceptance criteria
 
-Priority uses MoSCoW. Each story links to a test in `docs/requirements_traceability.md`.
+Priority uses MoSCoW. Each story links to a test in `docs/requirements_traceability_v3.md`.
 
 | ID | Story | Acceptance criteria (Given / When / Then) | Priority | Test |
 |---|---|---|---|---|

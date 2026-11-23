@@ -1,0 +1,230 @@
+{
+  "rfqs_per_year": {
+    "value": 720,
+    "tag": "Derived",
+    "source": "60 x 12",
+    "unit": "RFQs"
+  },
+  "lost_rfqs_per_year": {
+    "value": 36.0,
+    "tag": "Derived",
+    "source": "720 x 5%",
+    "unit": "RFQs"
+  },
+  "margin_pool_inr": {
+    "value": 8640000.0,
+    "tag": "Derived",
+    "source": "36 x 20 lakh x 12%",
+    "unit": "INR"
+  },
+  "win_back_base": {
+    "value": 0.25,
+    "tag": "Assumption",
+    "source": "50% of losses due to delay x 50% won once faster",
+    "unit": ""
+  },
+  "win_back_conservative": {
+    "value": 0.125,
+    "tag": "Assumption",
+    "source": "half of base",
+    "unit": ""
+  },
+  "recovered_margin_base_inr": {
+    "value": 2160000.0,
+    "tag": "Derived",
+    "source": "pool x 25%",
+    "unit": "INR"
+  },
+  "recovered_margin_base_lakh": {
+    "value": 21.6,
+    "tag": "Derived",
+    "source": "pool x 25%",
+    "unit": "lakh"
+  },
+  "recovered_margin_conservative_lakh": {
+    "value": 10.8,
+    "tag": "Derived",
+    "source": "pool x 12.5%",
+    "unit": "lakh"
+  },
+  "margin_pool_lakh": {
+    "value": 86.4,
+    "tag": "Derived",
+    "source": "ceiling, not relied on",
+    "unit": "lakh"
+  },
+  "payback_months_base_gross": {
+    "value": 4.44,
+    "tag": "Derived",
+    "source": "fee / monthly margin",
+    "unit": "months"
+  },
+  "payback_months_base_net": {
+    "value": 4.9,
+    "tag": "Derived",
+    "source": "after Rs 2 lakh a year running cost",
+    "unit": "months"
+  },
+  "payback_months_cons_gross": {
+    "value": 8.89,
+    "tag": "Derived",
+    "source": "fee / monthly margin at 12.5%",
+    "unit": "months"
+  },
+  "payback_months_cons_net": {
+    "value": 10.91,
+    "tag": "Derived",
+    "source": "after running cost at 12.5%",
+    "unit": "months"
+  },
+  "break_even_win_back_fee_only": {
+    "value": 0.0926,
+    "tag": "Derived",
+    "source": "fee / pool",
+    "unit": ""
+  },
+  "break_even_win_back_with_run_cost": {
+    "value": 0.1157,
+    "tag": "Derived",
+    "source": "(fee + run) / pool",
+    "unit": ""
+  },
+  "hours_released_gross": {
+    "value": 5400.0,
+    "tag": "Derived",
+    "source": "3,600 parts x 1.5 h",
+    "unit": "hours"
+  },
+  "capacity_value_gross_lakh": {
+    "value": 24.3,
+    "tag": "Derived",
+    "source": "5,400 h x Rs 450",
+    "unit": "lakh"
+  },
+  "review_hours": {
+    "value": 720.0,
+    "tag": "Assumption",
+    "source": "1 hour to review each of 720 RFQs a year",
+    "unit": "hours"
+  },
+  "hours_released_net": {
+    "value": 4680.0,
+    "tag": "Derived",
+    "source": "gross minus review hours",
+    "unit": "hours"
+  },
+  "capacity_value_net_lakh": {
+    "value": 21.06,
+    "tag": "Derived",
+    "source": "4,680 h x Rs 450",
+    "unit": "lakh"
+  },
+  "estimator_load_today": {
+    "value": 0.7812,
+    "tag": "Derived",
+    "source": "9,000 h / 11,520 h",
+    "unit": ""
+  },
+  "estimator_load_target": {
+    "value": 0.3125,
+    "tag": "Derived",
+    "source": "3,600 h / 11,520 h",
+    "unit": ""
+  },
+  "queue_wait_days_today": {
+    "value": 0.57,
+    "tag": "Assumption",
+    "source": "Erlang C, 6 servers, 12.5 h jobs, Poisson arrivals",
+    "unit": "working days"
+  },
+  "queue_p_wait_today": {
+    "value": 0.481,
+    "tag": "Assumption",
+    "source": "Erlang C",
+    "unit": ""
+  },
+  "queue_wait_days_target": {
+    "value": 0.002,
+    "tag": "Assumption",
+    "source": "Erlang C at 5 h jobs",
+    "unit": "working days"
+  },
+  "rfqs_in_progress_today": {
+    "value": 27.0,
+    "tag": "Derived",
+    "source": "Little's law, 9 days",
+    "unit": "RFQs"
+  },
+  "rfqs_in_progress_target": {
+    "value": 12.0,
+    "tag": "Derived",
+    "source": "Little's law, 4 days",
+    "unit": "RFQs"
+  },
+  "cash_payback_months": {
+    "value": 23.6,
+    "tag": "Derived",
+    "source": "tax 25% and 45 working-capital days are assumptions",
+    "unit": "months"
+  },
+  "irr_3yr": {
+    "value": 0.758,
+    "tag": "Derived",
+    "source": "Financials sheet",
+    "unit": ""
+  },
+  "irr_3yr_no_wc_release": {
+    "value": 0.43,
+    "tag": "Derived",
+    "source": "Financials sheet B47, working capital never released",
+    "unit": ""
+  },
+  "npv_after_tax_wc_inr": {
+    "value": 2488972,
+    "tag": "Derived",
+    "source": "12% discount rate, Financials sheet",
+    "unit": "INR"
+  },
+  "deepest_cash_need_inr": {
+    "value": 1482511,
+    "tag": "Derived",
+    "source": "client cumulative free cash flow",
+    "unit": "INR"
+  },
+  "vendor_gap_net10_inr": {
+    "value": 350100.0,
+    "tag": "Derived",
+    "source": "Cash sheet, cash received basis, 8 working days to pay",
+    "unit": "INR"
+  },
+  "vendor_gap_net10_pct": {
+    "value": 0.438,
+    "tag": "Derived",
+    "source": "of the Rs 8 lakh fee",
+    "unit": ""
+  },
+  "vendor_gap_net10_week": {
+    "value": 6,
+    "tag": "Derived",
+    "source": "Cash sheet",
+    "unit": "week"
+  },
+  "vendor_gap_net3_inr": {
+    "value": 229000.0,
+    "tag": "Derived",
+    "source": "same plan at 3 days to pay",
+    "unit": "INR"
+  },
+  "capacity_break_even_fit": {
+    "value": 0.463,
+    "tag": "Derived",
+    "source": "(fee + run) / recovered margin",
+    "unit": ""
+  },
+  "recovered_revenue_inr": {
+    "value": 18000000.0,
+    "tag": "Derived",
+    "source": "36 x 25% x Rs 20 lakh",
+    "unit": "INR"
+  }
+}

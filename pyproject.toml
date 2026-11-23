@@ -1,0 +1,34 @@
+[project]
+name = "marginladder"
+version = "3.3.0"
+description = "RFQ-to-quote costing case study and local working MVP"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["application/tests", "finance", "tracekit", "analytics"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 140
+target-version = "py311"
+extend-exclude = ["prototype", "docs", "model", "engine", "data"]  # engine and data are the retained v1 files, byte-identical
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "S"]
+ignore = ["S101", "S608", "E501", "UP037", "B008"]   # asserts in tests; SQL here is built from fixed fragments with bound values
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S105", "S106", "S603", "B011"]
+"finance/reconcile.py" = ["S101"]
+"finance/case_model.py" = ["UP035"]   # retained v2 file, byte-identical
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+check_untyped_defs = true
+files = ["application", "finance", "tracekit", "analytics", "scripts"]
+exclude = "/tests/"
+
+[[tool.mypy.overrides]]
+module = ["engine.*"]
+ignore_errors = true   # retained v1 file, byte-identical

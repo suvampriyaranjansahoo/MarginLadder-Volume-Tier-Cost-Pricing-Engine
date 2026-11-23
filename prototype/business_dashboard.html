@@ -86,7 +86,7 @@ tr.cur td{background:var(--panel2);font-weight:700}
  <div class="h main"><small>Margin recovered a year</small><b id="hv1">-</b><i id="hs1"></i></div>
  <div class="h"><small>Payback on the fee, margin basis</small><b id="hv2">-</b><i id="hs2"></i></div>
  <div class="h"><small>Break-even win-back</small><b id="hv3">-</b><i id="hs3"></i></div>
- <div class="h"><small>Chance NPV is positive</small>
+ <div class="h"><small>Share of simulated scenarios with positive NPV</small>
   <div class="gauge"><svg width="96" height="62" viewBox="0 0 120 76" aria-hidden="true"><path d="M12 64A48 48 0 0 1 108 64" fill="none" stroke="var(--line)" stroke-width="11" stroke-linecap="round"/><path id="garc" d="M12 64A48 48 0 0 1 108 64" fill="none" stroke="var(--accent)" stroke-width="11" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8" style="transition:stroke-dashoffset .8s ease,stroke .3s"/></svg><b id="hv4">-</b></div>
   <i id="hs4"></i></div>
 </div>
@@ -228,7 +228,7 @@ function hist(el,m,W){
 }
 function pRisk(r){
  const m=mc(),W=Math.max($("ch2").clientWidth||600,260);hist($("ch2"),m,W);
- $("mcs").innerHTML=[["Chance NPV is positive",pct(m.pos,0)],["P10 (bad case)",lakh(m.p10)],["Median",lakh(m.p50)],["P90 (good case)",lakh(m.p90)]].map(x=>`<div>${x[0]}<b>${x[1]}</b></div>`).join("");
+ $("mcs").innerHTML=[["Share of simulated scenarios with positive NPV",pct(m.pos,0)],["P10 (bad case)",lakh(m.p10)],["Median",lakh(m.p50)],["P90 (good case)",lakh(m.p90)]].map(x=>`<div>${x[0]}<b>${x[1]}</b></div>`).join("");
  $("so2").textContent=`Across 4,000 runs, NPV is positive in ${pct(m.pos,0)} of them. One run in ten is worse than ${lakh(m.p10)}. Red bars are losses.`;
  $("o_lo").textContent=S.lo+"%";$("o_hi").textContent=S.hi+"%";$("o_u").textContent="×"+S.unc.toFixed(1);
  const keys=[["wb","Win-back"],["lost","RFQs lost"],["margin","Margin"],["ov","Order value"],["rfq","RFQs per month"],["run","Running cost"],["disc","Discount rate"]];

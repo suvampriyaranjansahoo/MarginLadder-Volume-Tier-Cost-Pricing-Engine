@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+application/data/*.db
+application/data/*.db-shm
+application/data/*.db-wal
+application/data/demo_credentials.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.DS_Store

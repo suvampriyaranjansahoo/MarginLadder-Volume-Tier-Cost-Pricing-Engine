@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> new
+    new --> costing: estimator starts costing
+    new --> routing_review: new routing
+    routing_review --> ready_for_quote: Plant Head clears
+    costing --> ready_for_quote
+    costing --> routing_review
+    ready_for_quote --> costing
+    costing --> pending_approval: quote above 25 lakh
+    costing --> approved: quote at or below 25 lakh
+    pending_approval --> approved: Sales Head or Deputy approves
+    pending_approval --> sent_back: send back with reason
+    sent_back --> costing: re-cost, new version
+    approved --> sent: estimator sends
+    sent --> [*]
+    new --> cancelled
+    costing --> cancelled
+    cancelled --> [*]

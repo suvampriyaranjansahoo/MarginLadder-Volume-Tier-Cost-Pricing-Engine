@@ -1,0 +1,29 @@
+# Plain-English terms
+
+- **Gantt chart:** a timeline of planned tasks.
+- **Gate:** a decision point to continue, change or stop.
+- **Dependency:** work that must happen before another task.
+- **Critical path:** tasks that determine the earliest finish date.
+- **RACI:** who does the work, owns the decision, advises or is informed.
+- **RAID:** one list of risks, assumptions, issues and dependencies.
+- **RAG:** red, amber or green status.
+- **Change control:** formal approval for scope, cost or date changes.
+- **RICE:** reach × impact × confidence ÷ effort; a prioritisation method.
+- **Sensitivity:** change an input to see how the answer moves.
+- **Opportunity tree:** possible ways to improve an outcome.
+- **Metrics tree:** measures linked from an outcome to its drivers.
+- **Guardrail:** a limit that must not be broken.
+- **Experiment:** a planned test of a hypothesis.
+- **Sample size:** number of cases needed for a useful test.
+- **Minimum detectable effect:** smallest change the test is designed to detect.
+- **Confidence interval:** a range that shows uncertainty around an estimate.
+- **Rollback:** return to the prior safe version.
+- **MECE:** problem parts do not overlap and cover the full question.
+- **Price-volume-mix:** separate a financial change into price, quantity and mix.
+- **Working capital:** cash tied up in receivables, inventory and payables.
+- **Operating payback:** time for operating benefit after run cost to cover initial fee, before tax and working capital.
+- **Cash payback:** time for cash inflows to cover cash outflows, including timing, tax and working capital.
+- **UAT:** user acceptance testing by a business user.
+- **Traceability:** follow a rule through requirement, test and screen.
+- **Synthetic data:** made-up example records, not real company information.
+- **Observed evidence:** something a real person or system did, recorded with permission.

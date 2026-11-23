@@ -1,115 +1,100 @@
-# MarginLadder: RFQ-to-quote costing app (product case study)
+# MarginLadder — one RFQ-to-quote decision case, five role front doors
 
-**One line.** A costing app for a Pune auto-parts maker that cuts RFQ-to-quote from 9 working days to a 4-day target and takes costing from 2.5 h to 1 h a part.
+**Start with the row for your role in the table below.** Each path is a 5-minute route through the same case: finance is the numeric spine, and the other roles read it from their own angle.
 
-**Status.** Case study for a 7-week, ₹8 lakh build. Written as a PRD, plan, draft agreement and prototype. There is no live client. Numbers beyond the brief are my assumptions and are marked.
+**Decision question:** Should a hypothetical Pune auto-components manufacturer invest in an RFQ costing workflow, and what evidence would justify that investment?
 
-![Interactive dashboard demo](docs/dashboard_demo.gif)
+**Recommendation:** Do not approve a broad automation rollout on assumptions alone. First measure RFQ stage timestamps, rework, quote accuracy and loss reasons; pilot a reversible queue-visibility and approval workflow; expand costing automation only if observed evidence shows costing is a material bottleneck.
 
-**Try it:** open `prototype/business_dashboard.html` in a browser, or host the repo with GitHub Pages (Settings, Pages, branch `main`) and link `/prototype/business_dashboard.html` here. Move the win-back slider, switch the payment term, open the Risk tab for a 4,000-run simulation, and read the Decision tab for the go / no-go call.
+> **Case boundary:** Hypothetical case study and local MVP. All case inputs and benefits are assumptions or derived calculations; sample operational/product records are synthetic. There are no production users and no real customer interviews; no customer adoption, signed UAT, production deployment or realised financial benefit is claimed.
 
-| Overview | Risk |
-|---|---|
-| ![Overview](docs/dash_overview.png) | ![Risk](docs/dash_risk.png) |
-| **Cash** | **Operations** |
-| ![Cash](docs/dash_cash.png) | ![Operations](docs/dash_ops.png) |
+## Five-minute recruiter route
+1. `docs/portfolio/one_minute_case_brief.md` — decision and recommendation.
+2. `docs/portfolio/evidence_ledger.md` — claim source and verification status.
+3. `docs/consulting/MarginLadder_Executive_Recommendation.pptx` — 16-slide case deck.
+4. `model/MarginLadder_Monthly_FP&A_Model.xlsx` — monthly model and visible audit checks.
+5. `docs/portfolio/reviewer_audit.md` — role audit and proof gaps.
 
-![Full cash view](docs/dash_fullcash.png)
+## Financial answer at a glance
 
-![Decision](docs/dash_decision.png)
+The modelled lost-RFQ contribution pool is ₹86.4 lakh. Recovered margin is ₹21.6 / ₹10.8 lakh in the base / conservative cases. Operating payback is 4.9 months in the base case and 10.9 months in the conservative case; cash payback is 23.6 months. The three-year IRR is 75.8%, with a deepest cash need of ₹14.8 lakh; IRR without working-capital release is 43.0%.
 
-![RFQ to quote today and with the tool](docs/process_as_is_to_be.png)
+The model estimates 5,400 / 4,680 gross / net hours released and estimator load of 78% / 31%. The queue wait estimate is 0.57 day. Capacity break-even fit is 46%. Break-even win-back is 11.6% including run cost and 9.3% for fee only. These are scenario outputs, not observed outcomes.
 
-## The problem (from the brief)
-- 60 RFQs a month, 5 parts each, 2.5 h a part at ₹450/h. 6 estimators.
-- 9 working days from RFQ to quote against a 4-day target.
-- 5% of RFQs are lost. Each lost RFQ is ₹20 lakh at 12% margin.
-- 12.5 h of costing is 1.56 days, so about 83% of the 9 days is not hands-on costing.
 
-## The bet
-Waiting, not costing, is most of the delay. A register, a clock and a one-screen approval remove it. A faster costing screen removes the rest. If the Week 1 trace shows costing is over 40% of the cycle, cut the scope to costing only.
+| Metric | Base case | Meaning |
+|---|---:|---|
+| Annual RFQs | 720 | 60 per month × 12 |
+| Lost RFQs | 36 | 5% assumed loss rate |
+| Lost-RFQ contribution pool | ₹86.4 lakh | 36 × ₹20 lakh AOV × 12% margin |
+| Recovered contribution | ₹21.6 lakh | 25% assumed win-back; not realised |
+| Annual run cost | ₹2.0 lakh | Case assumption |
+| Net annual contribution after run cost | ₹19.6 lakh | Before tax and working capital |
+| Implementation fee | ₹8.0 lakh | Case assumption |
+| Operating payback | 4.9 months | Pre-tax and before working capital |
+| Cash payback | 23.6 months | Includes additional tax and working-capital assumptions |
 
-## What I built
-| Item | Where |
-|---|---|
-| Process map: today and with the tool | `docs/process_as_is_to_be.png` |
-| Swimlane maps: as-is and to-be, by role | `docs/ba/swimlane_as_is.png`, `docs/ba/swimlane_to_be.png` |
-| Stakeholders, RACI and objections | `docs/ba/raci_stakeholders.md` |
-| 12 user stories with Given / When / Then criteria | `docs/ba/user_stories.md` |
-| Gap analysis, KPI definitions, Week 1 baseline method, why 70% | `docs/ba/gap_analysis_and_kpis.md` |
-| Simulated cycle-time log (placeholder for the real trace) and chart | `data/simulated_rfq_log.csv`, `docs/ba/cycle_time_simulated.png` |
-| Requirements to tests (AT-01 to AT-12) | `docs/requirements_traceability.md` |
-| One-page answer-first memo with issue tree (consulting format) | `docs/one_page_memo.pdf`, `docs/one_page_memo.png` |
-| Go / no-go memo with kill criteria | `docs/go_no_go_memo.md` |
-| Finance model with scenario toggle: payback, break-even, NPV, cash gap, plus the client's incremental P&L, cash flow and balance sheet with IRR | `model/MarginLadder_finance_model.xlsx` |
-| Costing screen prototype, open in a browser | `prototype/costing_demo.html` |
-| Interactive dashboard, five tabs: overview, risk (4,000-run simulation and tornado), cash, operations, decision rules. Dark and light themes | `prototype/business_dashboard.html` |
-| Approval card prototype: role switch, send-back reason, ₹25,00,000 boundary check | `prototype/approval_card.html` |
-| Fixed-formula costing engine and 24 unit tests | `engine/cost_engine.py`, `engine/test_results.txt` |
-| 20-minute user call script | `docs/user_research_script.md` |
+Do not conflate operating payback with cash payback. Released estimator capacity is not cash savings unless a cash-releasing action is evidenced.
 
-![Costing screen](docs/costing_screen.png)
-
-![Approval card](docs/approval_card.png)
-
-![Cycle time, simulated](docs/ba/cycle_time_simulated.png)
-
-*Simulated from assumed stage means. Only the 1.56 days of costing comes from the brief. The Week 1 trace replaces it.*
-
-## Key numbers
-| Measure | Value | Tag |
+## Role paths — pick your door
+| Target role | Walkthrough | Evidence demonstrated |
 |---|---|---|
-| Margin recovered at 25% win-back | ₹21.6 lakh a year | Assumption (50% quotable × 50% won) |
-| Conservative (12.5%) | ₹10.8 lakh a year | Assumption |
-| Payback on ₹8 lakh | 4.4 and 8.9 months (4.9 and 10.9 after ₹2 lakh a year running cost) | Derived |
-| Break-even win-back | 9.3% (11.6% after running cost) | Derived |
-| Estimator hours freed | 5,400 a year, ₹24.3 lakh, counted as upside only | Derived |
-| Estimator load | 78% today, 31% at 1 h a part | Derived |
-| Peak funded gap, cash-received basis | about ₹3.5 lakh (44% of the fee) at net-10 terms | Derived |
-| Payback after tax and working capital | 24 months (4.9 on margin alone); IRR 76% over 3 years, NPV ₹24.9 lakh at 12% | Derived, tax 25% and 45 working-capital days are assumptions |
+| Product Finance Analyst | `docs/portfolio/role_paths/product_finance_analyst.md`, `docs/finance/decision_grade_model.md` and `docs/finance/decision_bridge.md` | Adoption-adjusted economics, investment decision, cash and payback |
+| Finance Analyst | `docs/portfolio/role_paths/finance_analyst.md` | Driver model, FP&A, variance and reconciliation |
+| Business Analyst | `docs/portfolio/role_paths/business_analyst.md` | Process, requirements, traceability and UAT design |
+| Associate Product Manager | `docs/portfolio/role_paths/apm.md` | Problem framing, MVP scope, prioritisation and metrics |
+| Consulting Analyst | `docs/portfolio/role_paths/consulting_analyst.md` | Issue tree, options, recommendation, decision analysis, market sizing and gates |
+| Project / Programme Manager | `docs/portfolio/role_paths/project_manager.md` | Phased plan, decision gates, pilot design, risks and stakeholder cadence |
 
-## Market context and benchmarks
-- Indian auto-component industry turnover was ₹7.60 lakh crore in FY26, up 12.7% ([ACMA, via Autocar Professional, 7 July 2026](https://www.autocarpro.in/news/acma-indian-auto-component-industry-grows-127-percent-to-inr-76-lakh-crore-in-fy26-133454)).
-- Operating margin for 59 listed auto-component companies was 13.6% in FY26, flat on the year ([Elara Capital, via Kotak Neo](https://www.kotakneo.com/news/sectors/auto-ancillaries-fy26-revenue-growth-margins-elara-report/)). This case uses 12%, from the brief, which is 1.6 points below that peer figure. Listed firms are larger than a 320-person plant, so treat it as a sense check, not a match.
-- I found no reliable independent source for the win-back rate after faster quoting. The results were vendor blogs. The 25% stays an assumption and the Risk tab tests a 0 to 50% range.
+## Product and technical scope
+- Local FastAPI/SQLite RFQ workflow prototype with role checks, approvals and audit events; not hosted or ERP-integrated.
+- Decimal-based costing engine with rate master and quote snapshots.
+- Monthly driver-based FP&A workbook and Python calculation/reconciliation support.
+- Valuation and decision workbook (`model/MarginLadder_finance_extension.xlsx`): DuPont, DCF, reverse DCF and peers on a listed auto-component maker, win-back stress grid, decision tree and market sizing. Public-data modelling exercise, not investment advice. See `docs/finance/extension_summary.md`.
+- Synthetic analytics examples, PRD, requirements, UAT design and executive recommendation.
 
-## Finance extension: a real company as a check
-`model/MarginLadder_finance_extension.xlsx` (10 sheets, 860 formulas, no errors) tests the case against Endurance Technologies, a listed auto-component maker, and six listed peers. Financials come from [stockanalysis.com](https://stockanalysis.com/quote/nse/ENDURANCE/financials/income-statement/) and [screener.in](https://www.screener.in/company/ENDURANCE/consolidated/), cross-checked against the [company-reported FY26 results](https://www.autocarpro.in/news/endurance-techs-fy26-income-rises-26-percent-europe-growth-gets-acquisition-boost-132659).
-- **Ratios:** five years of DuPont, ROIC, leverage, interest cover, cash conversion and implied capex.
-- **DCF:** bear, base and bull cases at an 11.8% WACC (risk-free rate and beta sourced, equity premium assumed). Base value is ₹1,077 a share against a ₹2,520 price (bear ₹720, bull ₹1,379).
-- **Reverse DCF:** the price implies a discount rate of about 8.1% on base-case cash flows, or about 39% yearly revenue growth for five years against an 18% four-year record that includes an acquisition. The sector trades far above what a 12% discount rate supports; Endurance is the cheapest of seven on EV to operating profit.
-- **Peers:** Gabriel India, Sansera, Uno Minda, Bharat Forge, Sundram Fasteners and Sona BLW. Gabriel India's P/E is distorted by other income and a merger; the sheet explains why.
-- **MarginLadder link:** the case assumed 45 working-capital days. Observed values run from −12 to 115, median 22. IRR is 76% at 45 days and never below 33% across the observed range.
-- **Win-back:** the 25% is split into two factors, with a grid showing where the case fails.
-- **Decision analysis:** a five-scenario decision tree and weighted scoring of seven options. Building now has an expected NPV of ₹27.7 lakh against ₹25.1 lakh staged; staging wins only if the chance of zero benefit is above about 35%. The plan stays staged for speed, reversibility and risk, and the Week 1 trace and capacity check test that risk directly.
-- **Market sizing:** the recoverable pool across the industry is about ₹342 crore a year, under 0.1% of turnover. This fits an internal tool, not a product bet.
-
-Context: a [BCG and ACMA study](https://www.autocarpro.in/news/resilience-gives-indias-auto-component-makers-a-competitive-edge-bcg-acma-study-134440) of 450 suppliers found the 75 most resilient earned 1.4 points more EBITDA margin in FY25 after early investment in technology and capacity. That is association, not cause, and it does not cover quoting.
-
-See `docs/business_review.md` for the weakest points and `docs/case_interview_5min.md` for the case-interview version.
-
-## Limits and corrections
-- **Payback was too rosy on margin alone.** The 4.4 and 4.9 month figures ignore tax and the cash tied up in receivables and stock on the extra sales. After both, payback is about 24 months and the client's cash need reaches ₹14.8 lakh (Financials sheet, dashboard Cash tab).
-- **The vendor's cash gap was understated.** An early version counted invoices raised, not cash received. On a cash-received basis the peak gap is about ₹3.5 lakh, not ₹1.2 lakh.
-- **The 9-day split is not measured.** Only costing (1.56 days) comes from the brief. The simulated log and the wait-time split are placeholders for the Week 1 trace.
-- **No client data.** Win-back (25%), running cost (₹2 lakh a year), discount rate and the Monte Carlo ranges are assumptions. The peer margin check in the model uses the 13.6% listed-company figure above.
-
-## Design choices and trade-offs
-- **Cash first.** The case counts recovered margin, not time saved. Time saved becomes cash only if the team quotes more.
-- **AI extracts, a person accepts, fixed formulas price.** No price is shown until every AI value is accepted.
-- **₹25 lakh approval rule.** A trigger at 70% of quotes keeps mean approval wait at 0.70 day, inside a 0.75-day budget.
-- **Early Release at Gate 2.** The register and clock ship first and are a condition of the second payment.
-- **Payments 20/20/40/20.** 60% is paid only after delivery and acceptance. The cost is a funding gap, shown in the model.
-
-## What I would do next
-1. Run three calls with the script in `docs/user_research_script.md` and replace the assumptions with quotes.
-2. Run the Week 1 trace on 10 recent RFQs and replace the stage split with timestamps.
-3. Deploy both prototypes with GitHub Pages and link them at the top of this README.
-
-## Run it
+## Run and verify
+```bash
+pip install -r requirements-dev.txt
+pytest
+python3 -m finance.reconcile
+python3 -m finance.monthly_plan
+python3 scripts/check_consistency.py
+python3 scripts/portfolio_release_audit.py
+uvicorn application.server:app --reload
 ```
-open prototype/costing_demo.html
-open prototype/approval_card.html
-open prototype/business_dashboard.html
-python3 engine/cost_engine.py     # prints the worked example and runs 24 tests
-```
+
+## Evidence taxonomy
+- **Case input:** stated in the hypothetical brief.
+- **Derived:** arithmetic from case inputs.
+- **Assumption:** estimate requiring validation.
+- **Synthetic:** generated records for method demonstration.
+- **Observed:** reserved for real participant/system evidence; none is claimed here.
+
+Permitted claim: “Built a driver-based investment case and local RFQ workflow MVP; modelled contribution recovery under explicit scenarios.”
+
+Do not claim recovered revenue, cycle-time reduction, realised savings, product-market fit or customer deployment.
+
+## Documentation map
+
+Canonical source register: `docs/CANONICAL_DOCUMENTS.md`. Financial decision bridge: `docs/finance/decision_bridge.md`.
+
+Finance: `docs/finance/` · BA: `docs/ba/` · Product: `docs/product/` · Consulting: `docs/consulting/` · Portfolio: `docs/portfolio/` · Historical versions are identified by their versioned filenames; use the canonical register.
+
+
+## Product Finance deep-dive additions
+- `docs/portfolio/Investment_Memo.md` — concise investment recommendation and capital gates.
+- `docs/finance/decision_grade_model.md` — adoption-adjusted economics, model definitions and downside discipline.
+- The recruiter-facing workbook includes an `Adoption Economics` sheet; the monthly plan links its effective win-back directly to adoption × incremental lift assumptions.
+
+## New role evidence packs
+- Project Manager: `docs/pm/12_week_delivery_plan.md` and the RACI, RAID, change-control, status and resourcing files in `docs/pm/`.
+- APM / PM: `docs/product/apm_pm_decision_pack.md`.
+- Consulting: `docs/consulting/consulting_challenge_pack.md` and final three slides of the deck.
+- Business Analyst: `docs/ba/complete_traceability_and_process_pack.md`.
+- Finance: `docs/finance/finance_manager_reproduction_pack.md` and workbook `Audit Checks` sheet.
+- 14-day real-evidence plan: `docs/portfolio/user_14_day_action_plan.md`.
+- Reproducible local execution log: `docs/validation/EXECUTION_EVIDENCE_LOG.md`; independent UAT and sign-off protocol: `docs/ba/independent_uat_and_signoff_protocol.md` and blank `docs/ba/stakeholder_signoff_template.md`.
+- Independent final-file review: `docs/validation/AUDITOR_FINAL_PASS.md`.
+
+All status, research, consent and UAT templates remain empty. No participant session, sign-off, live deployment or financial benefit is claimed.

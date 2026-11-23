@@ -1,0 +1,23 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check --no-cache .
+      - run: mypy --cache-dir /tmp/marginladder-mypy-cache
+      - run: python -B engine/cost_engine.py
+      - run: PYTHONDONTWRITEBYTECODE=1 pytest -p no:cacheprovider --cov=application --cov=finance --cov=tracekit --cov=analytics --cov-report=term-missing --cov-fail-under=85
+      - run: python -B -m finance.reconcile
+      - run: python -B -m finance.variance
+      - run: python -B -m analytics.product_metrics
+      - run: python -B scripts/check_consistency.py
+      - run: python -B scripts/portfolio_release_audit.py
