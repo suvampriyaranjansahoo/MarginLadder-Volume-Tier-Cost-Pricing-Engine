@@ -116,4 +116,4 @@ Finance: `docs/finance/` · BA: `docs/ba/` · Product: `docs/product/` · Consul
 - Finance: `docs/finance/finance_manager_reproduction_pack.md`; workbook sheets `Audit Checks` and `Tornado`; chart `docs/finance/tornado.png`.
 - Claim ledger: `docs/portfolio/evidence_ledger.md`. Developer-run task script (no people involved): `docs/validation/developer_task_run.md`. Blank validation templates and the independent UAT protocol (not executed): `docs/validation/`, `docs/ba/independent_uat_and_signoff_protocol.md`.
 
-All status, research, consent and UAT templates remain empty. No participant session, sign-off, live deployment or financial benefit is claimed.
+
