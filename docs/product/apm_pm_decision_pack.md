@@ -13,7 +13,7 @@
 5. Sales sends the quote and records outcome.
 6. If lost, team records reason and whether it was price, timing, capacity or product fit.
 
-Unknowns: actual handoffs, queue ownership, rework, customer holds, timestamp quality and reasons for loss. No real user validated this journey. The current journey is a desk-based hypothesis and must not be described as user research.
+Unknowns: actual handoffs, queue ownership, rework, customer holds, timestamp quality and reasons for loss. No real user validated this journey.
 
 ## Opportunity tree
 **Outcome:** improve profitable RFQ response, not simply make the screen faster.
@@ -58,27 +58,6 @@ RICE = Reach × Impact × Confidence ÷ Effort. Scores below are judgement input
 | AI drawing extraction | 2 | 4 | 1 | 5 | 1.6 |
 
 **Rank flip:** if representative traces show costing dominates the working-time bottleneck, increase costing confidence from 2 to 5 and reduce effort from 5 to 3 after a scoped technical spike: RICE becomes 33.3 and it ranks first. If approval waits dominate, the approval queue remains the first targeted workflow. The ranking changes because evidence changes, not because the scoring formula changes.
-
-## User validation protocol — execution-ready, not yet executed
-
-**Current status: pending real participants.** No participant sessions, user interviews, task observations or adoption measurements are claimed in this release. The repository includes blank capture templates; blank templates are not validation evidence.
-
-### Minimum formative round
-- Recruit five independent participants who perform relevant RFQ, estimation, sales or approval work. Do not recruit only friends with no workflow exposure.
-- Obtain voluntary consent; do not collect employer-confidential data, live prices, customer names, drawings or credentials.
-- Freeze and record the build ID. Use the same synthetic dataset, task wording and success criteria for each participant.
-- Ask participants to complete: (1) locate an overdue RFQ and identify its owner, (2) create a complete RFQ, (3) send back and re-cost a quote, (4) identify approval state and audit history.
-- Do not coach during the first attempt. Record completion without help, time-on-task, errors, recovery, critical control failures and participant interpretation.
-- Debrief with neutral questions: “What did you expect?”, “What was unclear?”, “What would you do next in your real workflow?”, “What evidence contradicts my assumption?”
-- Log every session in `data/templates/usability_session_template.csv`; log discovery findings in `data/templates/discovery_interview_log_template.csv`.
-- Change the design only against recorded findings. Re-test changed tasks with new or clearly identified returning participants.
-- Report denominator and task-level outcomes. Five sessions are formative usability evidence, not statistically representative proof or product-market fit.
-
-### Decision thresholds (pre-registered)
-- Usability issue: at least 2 of 5 participants independently encounter the same material friction.
-- Critical stop: any participant can bypass role controls, expose another role's data, or produce an unauthorised price/approval action.
-- Continue iteration: at least 4 of 5 complete the core task without moderator help after remediation; this is a proposed usability gate, not a current result.
-- Do not infer cycle-time reduction, conversion lift or adoption from a moderated prototype session.
 
 ## Experiment pack
 **Hypothesis:** a visible owner, due date and approval queue will reduce avoidable queue time without increasing quote errors or below-floor quotes.

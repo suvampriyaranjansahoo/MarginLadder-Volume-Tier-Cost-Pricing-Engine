@@ -369,7 +369,14 @@ class MarginLadderService:
             except ValueError as exc:
                 raise ServiceError("Due date must use YYYY-MM-DD format") from exc
             if parsed_due < date.today():
-                raise ServiceError("Due date cannot be in the past")
+                # A past date is allowed only if it is the date already stored. Otherwise an
+                # overdue RFQ could not be reassigned: the editor sends owner and due date together.
+                with self._db() as con:
+                    current = con.execute("SELECT due_date FROM rfqs WHERE id=?", (rfq_id,)).fetchone()
+                if current is None:
+                    raise NotFoundError("RFQ not found")
+                if current["due_date"] != due:
+                    raise ServiceError("Due date cannot be in the past")
             changes["due_date"] = due
         if "status" in payload:
             target = str(payload["status"])

@@ -36,7 +36,7 @@ At an assumed 25% effective win-back, 9 RFQs are recovered and modelled contribu
 A bottom-up case would sum eligible RFQs by customer/product, verified loss reason, actual contribution per product, operator capacity, and measured incremental conversion. Those inputs do not exist in this hypothetical case. Therefore a credible bottom-up number cannot be calculated. The gap between ₹86.4L top-down pool and any bottom-up estimate is **not zero**; it is currently unmeasured. Do not present the theoretical pool as addressable revenue.
 
 ## Options table
-Weights are analyst judgement. Scores are 1 (weak) to 5 (strong). Higher is better. The scorecard is a decision aid, not a measured preference study.
+Weights are analyst judgement. Scores are 1 (weak) to 5 (strong). Higher is better.
 
 | Option | Evidence speed 25% | Reversibility 20% | Control 20% | Potential benefit 20% | Delivery risk 15% | Weighted |
 |---|---:|---:|---:|---:|---:|---:|
@@ -45,16 +45,7 @@ Weights are analyst judgement. Scores are 1 (weak) to 5 (strong). Higher is bett
 | Dedicated costing screen | 3 | 4 | 4 | 4 | 3 | 3.60 |
 | Full integrated platform | 1 | 1 | 3 | 5 | 1 | 2.20 |
 
-**Numerical weight sensitivity (same 1–5 option scores; only weights change):**
-
-| Option | Base weights: 25/20/20/20/15 | Benefit-heavy: 10/10/10/60/10 |
-|---|---:|---:|
-| Queue/register visibility | 4.45 | 3.70 |
-| Process redesign only | 3.75 | 2.90 |
-| Dedicated costing screen | 3.60 | **3.80** |
-| Full integrated platform | 2.20 | 3.60 |
-
-The benefit-heavy weights are evidence speed 10%, reversibility 10%, control 10%, potential benefit 60%, delivery risk 10%. Under that deliberately benefit-dominant weighting, the costing screen moves from third to first. This is a **rank-flip stress test**, not proof that costing is the bottleneck. The rank changes because the weight assigned to potential benefit changes; the underlying scores remain analyst judgement. Before sponsor approval, replace judgement scores with evidence from stage-time observations, feasibility and validated economics. The slide 16 sensitivity uses these same values.
+**Weight sensitivity:** if potential benefit weight rises from 20% to 40% and evidence speed falls from 25% to 15% (re-normalise remaining weights proportionally), the costing screen may overtake the register only if its benefit score is supported by stage-time evidence. If the score remains hypothetical, the rank should not be changed on weight manipulation alone. The exact weight table and recalculation should be updated before a sponsor decision.
 
 ## Recommendation
 Do not approve a broad automation rollout. First instrument RFQ stage timestamps, rework, quote accuracy and loss reasons. Pilot a reversible queue-visibility and approval workflow. Expand costing automation only if representative evidence shows active costing is a material bottleneck and price/capacity guardrails pass.

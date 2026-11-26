@@ -1,0 +1,21 @@
+id,name,kind,duration_days,predecessors,accountable,responsible,consulted,informed,provider_effort_pd,client_effort_pd
+T01,Kick-off and agreement signed,task,1,,MD,PO,EH|PH|SH,RO|IT,1,1
+T02,Agree definitions (RFQ / lost / hold / calendar),task,2,T01,EH,BA,SH|PH,MD,2,2
+T03,Week 1 trace of 10 recent RFQs,task,5,T01,EH,EH|BA,IT,PO|MD,3,4
+T04,Plant capacity answer (spare share of output),task,2,T01,PH,PH,PO,MD,0.5,1
+T05,Code the stated reason on the last 20 lost RFQs,task,3,T01,SH,SH,PO,MD,0.5,2
+T06,Rate owner signs off the rate master,task,8,T01,RO,RO,EH,PO,1,4
+T07,Build Early Release: register and clock,task,6,T02,DL,DL,BA,PO,12,0
+T08,Run UAT-01 to UAT-12 on a frozen build,task,2,T07,BA,BA|EH,DL,PO,4,2
+T09,Estimators start daily use of the register,task,3,T08,EH,EH,PO,MD,2,6
+G2,GATE 2: is the register in daily use?,gate,1,T09|T03,MD,PO,EH|SH,PH,1,1
+T10,One-screen approval card with deputy,task,5,G2,DL,DL,SH,EH,8,0
+T11,Gate 3 evidence pack,task,4,T04|T05|T10,PO,BA,SH|PH|EH,MD,6,1
+G3,GATE 3: build the full costing screen or stop?,gate,1,T11,MD,PO,SH|PH|EH,RO,1,1
+T12,Costing screen on the fixed engine and signed rates,task,7,G3|T06,DL,DL,EH,PO,24,0
+T14,Agree and sign off the 20-part parity set,task,3,T06,SH,EH,RO|PO,MD,1,4
+T13,Run the 20-part parity test,task,2,T12|T14,EH,EH|DL,SH,MD,3,4
+G4,GATE 4: do prices match within INR 0.01?,gate,1,T13,MD,PO,SH|EH,RO,1,1
+T15,Freeze baseline and pilot measurement sheet,task,3,G2,BA,BA,EH,PO,4,1
+T16,Pilot of the Early Release (7 weeks),task,35,G2|T15,PO,EH,BA|SH,MD,12,10
+T17,Month-3 read-out: Release 2 or stop,task,5,T16|G4,MD,PO|BA,SH|PH|EH,RO,8,2

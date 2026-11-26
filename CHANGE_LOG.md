@@ -1,5 +1,37 @@
 # Change log
 
+## 3.4.5 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| README demo section with dashboard GIF, two prototype screens and a 3-step run | The README showed no pictures |
+
+## 3.4.4 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| `scripts/developer_task_run.py` and `docs/validation/developer_task_run.md` | A reproducible, scripted run of 3 workflow tasks on synthetic data, labelled developer-run |
+
+## 3.4.3 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| Past due dates are rejected when an RFQ is edited | Edit path accepted what creation rejected (found in a simulated workflow test) |
+| A past date is allowed only if it is the date already stored | The first version of this fix blocked reassigning overdue RFQs |
+| Three regression tests added (2 service, 1 API) | 166 tests in total |
+| Added independent UAT protocol (not executed) and a blank sign-off template | Defines how real acceptance would be recorded |
+| Simulated defect note `docs/validation/SIMULATED_UAT_DEFECT_FIX_v3_4_3.md` | States the evidence boundary |
+
+## 3.4.1 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| Deck: three challenge slides restyled, placed in order (option weights after the options slide; red team and what-would-change-my-mind before the appendix) | They were plain text after the appendix |
+| 12-week plan computed from `docs/pm/plan.csv` (dependencies, slack, critical path, Gantt picture); gates on days 15, 25, 35 | The earlier plan used different gate names and days from `docs/strategy/rollout_30_60_90.md` |
+| RAID log, RACI, change control, status templates and effort rewritten to the same task IDs and roles | One plan, one vocabulary |
+| Effort reconciled: 120.2 person-days against the earlier 24 person-week plan | Two different numbers before |
+| `Tornado` sheet and chart in the monthly workbook | Finance pack had a table without ranking |
+| BA traceability rebuilt: rule numbers now match `docs/ba/business_rules.md`; BR-06, BR-10 and BR-26 were orphans and are now traced | The pack used rule numbers that did not match the catalogue |
+| `scripts/check_role_packs.py` (20 checks) | Role packs had no automatic check |
+| Stale counts and the false "no audit sheet" sentence fixed; sign-off now says what was and was not re-run | Contradictions |
+| Process and coaching files moved out of the repository | Recruiters should see the work, not the review notes |
+
 ## 3.3.1 (portfolio release; application version stays 3.3.0)
 | Change | Why |
 |---|---|
@@ -126,12 +158,3 @@ This release is additive. The original costing engine, original Excel models, or
 - Reframed the real-world checklist as a future field-validation protocol, not an incomplete build task.
 - Corrected the obsolete finance test count and refreshed the current release verification report.
 - Portfolio package patch version is 3.2.1; application API remains 3.1.0.
-
-
-## v3.4.2 — RFQ due-date validation hardening
-
-- Fixed an inconsistency: editing an existing RFQ now rejects due dates earlier than the current date, matching RFQ creation.
-- Added authoritative server-side validation in `update_rfq`; rejected updates do not change the stored due date.
-- Added a browser date-input minimum as an immediate usability guard.
-- Added service-level and API regression tests for past-date edits and unchanged stored values after rejection.
-- This change addresses the defect found during simulated multi-role workflow testing. It does not constitute external-user UAT.

@@ -1,6 +1,6 @@
-# 4 December 2026 validation status — TEMPLATE
+# Day-14 validation status — TEMPLATE
 
-RAG: NOT SET. This is a planned reporting date, not a completed report.
+RAG: NOT SET. Fill this in only after the real actions have happened. It is a format, not a report.
 
 Task sessions planned/completed: [ ] / [ ]
 

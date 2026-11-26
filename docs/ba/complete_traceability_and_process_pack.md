@@ -6,32 +6,34 @@
 **30-second explanation:** “I turn the RFQ process into numbered rules and requirements, then connect each to acceptance tests and the screen. I separate automated tests from business UAT.”
 
 ## 1. Traceability
-The detailed baseline is `docs/requirements_traceability_v3.md`. The table below adds the screen link and proof status.
+The table follows `docs/requirements_traceability_v3.md` and adds the screen. Rule numbers (BR-xx) are the ones in `docs/ba/business_rules.md`. `python3 scripts/check_role_packs.py` fails if any of the 26 rules is missing from the traceability tables.
 
-| Rule / requirement | Test / proof | Screen or control | Status |
-|---|---|---|---|
-| BR-01 / FR-01: create RFQ with owner and due date | Application service/API tests | Register / Create RFQ | Built; automated tests |
-| BR-02 / FR-02: find and page RFQs | Search and pagination tests | Register search / list | Built; automated tests |
-| BR-03 / FR-03: valid status transitions | State transition tests | RFQ detail status control | Built; automated tests |
-| BR-04 / FR-04: deterministic costing | Cost engine reference tests | Costing screen | Built; customer price parity open |
-| BR-05 / FR-05: preserve quote version | Quote snapshot tests | Quote detail / history | Built; automated tests |
-| BR-06 / FR-06: approval threshold | Role and threshold tests | Approval queue | Built; GST basis requires business confirmation |
-| BR-07 / FR-07: send-back reason and recost | Send-back / version tests | Approval card / recost | Built; automated tests |
-| BR-08 / FR-08: approved quote dispatch | Approval/send tests | Quote detail / Send | Built; automated tests |
-| BR-09 / FR-09: audit lifecycle events | Audit event tests | Audit history | Built; automated tests |
-| BR-10 / FR-10: printable quote | Authenticated print route test | Quote print view | Built; signed customer PDF not built |
-| BR-11 / FR-11: named users and roles | Login, lockout and session tests | Login / user session | Built; MFA/password reset not built |
-| BR-12 / FR-12: operational KPIs | KPI pairing and working-day tests | Dashboard cards | Built; synthetic data only |
-| BR-13 / FR-13: trace import | Atomic import and summary tests | Trace import / summary | Built; real RFQ trace absent |
-| BR-14 / FR-14: label evidence and simulation | Source-label tests | Dashboard notices | Built; no real result implied |
-| NFR-01: migration safety | Upgrade and migration tests | Application start / migration | Built; local tests |
-| NFR-02: secret handling | Hash/session tests | Login and session | Built; security review not independent |
-| AT-01: 20-part price parity | No approved customer reference set | Costing screen | OPEN — requires permissioned reference data |
-| AT-06: AI drawing extraction | No screen or implementation | None | NOT BUILT |
-| AT-10: customer-group drawing access | No file store / permission UI | None | NOT BUILT |
-| AT-12: pilot with six estimators and Sales Head | No live participants or pilot | Register / approval queue | OPEN — requires real people and UAT |
+| Requirement | What it protects | Rules | Automated test | UAT | Screen | Status |
+|---|---|---|---|---|---|---|
+| FR-01 | 9 days vs 4-day target: every RFQ has an owner, due date and age [Brief] | BR-01 to BR-03 | `test_create_rfq_persists_and_audits`, `test_assignment_update_rejects_past_due_date`, `test_overdue_rfq_can_be_reassigned_with_its_unchanged_due_date` | UAT-03 | New RFQ form; RFQ register | Built |
+| FR-02 | Find an RFQ fast | none | `test_pagination_and_count`, `test_search_treats_percent_and_underscore_literally` | UAT-03 | RFQ register (search and paging) | Built |
+| FR-03 | Controlled status path | BR-04, BR-05 | `test_invalid_status_transition_is_blocked`, `test_only_plant_head_can_clear_routing_review` | UAT-11 | RFQ detail (status control) | Built |
+| FR-04 | Same inputs give the same price [Brief] | BR-06, BR-07, BR-08, BR-10 | `test_create_quote_produces_three_tiers_and_snapshot`; engine T10 | UAT-04 | RFQ detail (costing, three prices) | Built; parity with Company A's Excel open |
+| FR-05 | Old quotes stay reproducible [Brief] | BR-09 | `test_create_quote_produces_three_tiers_and_snapshot`; engine T20 | UAT-04 | RFQ detail (quote versions) | Built |
+| FR-06 | ₹25 lakh approval rule [Brief] | BR-11 to BR-13; BR-26 (approval wait budget, measured by the FR-12 KPI) | `test_large_quote_requires_sales_approval`, `test_estimator_cannot_approve`; engine T21, T22 | UAT-04, UAT-06 | RFQ detail (approval card) | Built; GST basis open (BR-12) |
+| FR-07 | Send-back with a reason | BR-14, BR-15 | `test_send_back_requires_reason_and_returns_to_costing`, `test_quote_versions_increment_after_send_back` | UAT-07, UAT-08 | RFQ detail (send-back with reason) | Built |
+| FR-08 | Only approved quotes go out | BR-16 | `test_sales_head_can_approve_and_quote_can_be_sent` | UAT-10 | RFQ detail (mark as sent) | Built |
+| FR-09 | Audit trail [Brief: audit log] | BR-17 | `test_audit_trail_captures_approval_lifecycle`, `test_login_and_failure_are_audited` | UAT-09 | Activity and audit trail | Built |
+| FR-10 | Printable quote | none | `test_print_view_requires_sign_in_and_escapes_html` | UAT-10 | Print view of the quote | Built; no signed PDF |
+| FR-11 | Named users with roles [Brief: named users] | BR-18 to BR-20 | `test_login_returns_working_session_and_logout_ends_it`, `test_lockout_after_five_failures_blocks_even_the_right_password`, `test_token_is_not_stored_in_clear` | UAT-01, UAT-02 | Sign in | Built at demo grade; no MFA, no reset |
+| FR-12 | Live KPIs from events | BR-23; BR-26 (reported, not enforced) | `test_kpis_use_working_days_and_report_missing_rate`, `test_approval_wait_pairs_request_and_decision` | none | Live KPIs panel | Built |
+| FR-13 | Real baseline replaces the simulated log | BR-21 to BR-25 | `test_trace_import_and_summary`, `test_trace_import_is_all_or_nothing` | UAT-12 | Week-1 trace import panel | Built; waits for real data |
+| FR-14 | Honest evidence labels | none | `test_dashboard_distinguishes_application_data_and_simulation` | none | Notices on dashboard and print view | Built |
+| NFR-01 | Data survives upgrades | none | `test_v2_database_upgrades_without_losing_data`, `test_migrations_run_once` | none | None (start-up migration) | Built |
+| NFR-02 | No secrets in the repo or the database | BR-17 | `test_password_hash_is_salted_and_verifies`, `test_token_is_not_stored_in_clear` | none | None (storage rule) | Built |
+| NFR-03 | A page of the register loads in one query | none | `test_listing_includes_latest_quote_without_extra_queries` | none | RFQ register | Built |
+| NFR-04 | Numbers in documents match the models | none | `test_every_python_cell_matches_the_excel_workbook` | none | None (document check script) | Built |
+| AT-01 | Parity with Company A's Excel on 20 parts [Brief] | none | none | none | None yet | **Open: needs Company A's signed-off rates** |
+| AT-06 | AI value shows its source and blocks costing until accepted | BR-X2 | none | none | None (not built) | **Not built** |
+| AT-10 | Users see only their customer groups; drawing views logged | BR-X3 | none | none | None (not built) | **Not built** (no file store) |
+| AT-12 | Six estimators and the Sales head use the register in Week 1 | none | none | none | None yet | **Open: needs a pilot** |
 
-**Orphan rule:** any requirement without a test or screen is explicitly marked OPEN or NOT BUILT above. Do not describe an automated test as business acceptance.
+**Orphan rule:** a requirement with no test, UAT or screen is marked Open or Not built in the Status column, never left blank. Requirements that have no rule (for example FR-02 and FR-10) say `none`. Do not describe an automated test as business acceptance.
 
 ## 2. AS-IS and TO-BE
 Pain points below are hypotheses derived from the hypothetical case, not observed stakeholder findings.

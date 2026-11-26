@@ -13,7 +13,26 @@
 2. `docs/portfolio/evidence_ledger.md` — claim source and verification status.
 3. `docs/consulting/MarginLadder_Executive_Recommendation.pptx` — 16-slide case deck.
 4. `model/MarginLadder_Monthly_FP&A_Model.xlsx` — monthly model and visible audit checks.
-5. `docs/portfolio/reviewer_audit.md` — role audit and proof gaps.
+5. Your role's path in `docs/portfolio/role_paths/` (table below).
+
+## Demo (screenshots; hypothetical case, synthetic data)
+![Interactive business-case dashboard: change any input and every number updates](docs/dashboard_demo.gif)
+
+*Dashboard: move the win-back slider and watch payback, break-even and cash change. Each input is tagged Brief, Assumption or Derived. The 97% "chance NPV is positive" comes from a simulation over my own assumed ranges, so it shows sensitivity and is not a forecast.*
+
+| Approval card | Costing screen |
+|---|---|
+| ![Approval card with the INR 25 lakh rule](docs/approval_card.png) | ![Costing screen with three volume prices](docs/costing_screen.png) |
+
+*Illustrative prototype screens. Rates, margins and prices are made up for the case. Nothing sets a price with AI.*
+
+**Try it yourself in 3 steps (about 2 minutes):**
+```bash
+pip install -r requirements.txt
+uvicorn application.server:app --reload      # then open http://127.0.0.1:8000
+python3 scripts/developer_task_run.py         # or: run 3 scripted workflow tasks, no browser needed
+```
+No live hosted link exists yet. When one does, it will be listed here and marked as a demo on synthetic data.
 
 ## Financial answer at a glance
 
@@ -61,6 +80,8 @@ python3 -m finance.reconcile
 python3 -m finance.monthly_plan
 python3 scripts/check_consistency.py
 python3 scripts/portfolio_release_audit.py
+python3 scripts/check_role_packs.py
+python3 scripts/make_pm_artifacts.py   # rebuilds the Gantt and RACI from docs/pm/plan.csv
 uvicorn application.server:app --reload
 ```
 
@@ -88,13 +109,11 @@ Finance: `docs/finance/` · BA: `docs/ba/` · Product: `docs/product/` · Consul
 - The recruiter-facing workbook includes an `Adoption Economics` sheet; the monthly plan links its effective win-back directly to adoption × incremental lift assumptions.
 
 ## New role evidence packs
-- Project Manager: `docs/pm/12_week_delivery_plan.md` and the RACI, RAID, change-control, status and resourcing files in `docs/pm/`.
+- Project Manager: `docs/pm/schedule_and_critical_path.md` (computed Gantt and critical path), `docs/pm/raci_tasks.md`, `raid_log.md`, `change_control_and_communications.md`, `status_reports_templates.md` and `resourcing_effort.md`.
 - APM / PM: `docs/product/apm_pm_decision_pack.md`.
-- Consulting: `docs/consulting/consulting_challenge_pack.md` and final three slides of the deck.
+- Consulting: `docs/consulting/consulting_challenge_pack.md`; slides 8, 14 and 15 of the deck (option weights, red team, what would change my mind).
 - Business Analyst: `docs/ba/complete_traceability_and_process_pack.md`.
-- Finance: `docs/finance/finance_manager_reproduction_pack.md` and workbook `Audit Checks` sheet.
-- 14-day real-evidence plan: `docs/portfolio/user_14_day_action_plan.md`.
-- Reproducible local execution log: `docs/validation/EXECUTION_EVIDENCE_LOG.md`; independent UAT and sign-off protocol: `docs/ba/independent_uat_and_signoff_protocol.md` and blank `docs/ba/stakeholder_signoff_template.md`.
-- Independent final-file review: `docs/validation/AUDITOR_FINAL_PASS.md`.
+- Finance: `docs/finance/finance_manager_reproduction_pack.md`; workbook sheets `Audit Checks` and `Tornado`; chart `docs/finance/tornado.png`.
+- Claim ledger: `docs/portfolio/evidence_ledger.md`. Developer-run task script (no people involved): `docs/validation/developer_task_run.md`. Blank validation templates and the independent UAT protocol (not executed): `docs/validation/`, `docs/ba/independent_uat_and_signoff_protocol.md`.
 
 All status, research, consent and UAT templates remain empty. No participant session, sign-off, live deployment or financial benefit is claimed.

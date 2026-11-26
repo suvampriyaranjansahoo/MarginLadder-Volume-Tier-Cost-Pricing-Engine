@@ -8,7 +8,7 @@ Replaces `requirements_traceability_v2.md` (kept for history). Test names are ch
 | FR-01 | 9 days vs 4-day target: every RFQ has an owner, due date and age [Brief] | US-01 | BR-01 to BR-03 | UC-01 | `create_rfq` | `test_create_rfq_persists_and_audits` | UAT-03 | Built |
 | FR-02 | Find an RFQ fast | US-01 | | UC-01 | `list_rfqs`, `count_rfqs` | `test_pagination_and_count`, `test_search_treats_percent_and_underscore_literally` | UAT-03 | Built |
 | FR-03 | Controlled status path | US-06 | BR-04, BR-05 | UC-02 | `ALLOWED_TRANSITIONS` | `test_invalid_status_transition_is_blocked`, `test_only_plant_head_can_clear_routing_review` | UAT-11 | Built |
-| FR-04 | Same inputs give the same price [Brief] | US-04 | BR-07, BR-08 | UC-02 | `engine.cost_engine` | `test_create_quote_produces_three_tiers_and_snapshot`; engine T10 | UAT-04 | Built; parity with Company A's Excel open |
+| FR-04 | Same inputs give the same price [Brief] | US-04 | BR-06, BR-07, BR-08, BR-10 | UC-02 | `engine.cost_engine` | `test_create_quote_produces_three_tiers_and_snapshot`; engine T10 | UAT-04 | Built; parity with Company A's Excel open |
 | FR-05 | Old quotes stay reproducible [Brief] | US-05 | BR-09 | UC-02 | `quotes.snapshot_json` | `test_create_quote_produces_three_tiers_and_snapshot`; engine T20 | UAT-04 | Built |
 | FR-06 | ₹25 lakh approval rule [Brief] | US-07 | BR-11 to BR-13 | UC-03 | `needs_sales_head`, `decide_quote` | `test_large_quote_requires_sales_approval`, `test_estimator_cannot_approve`; engine T21, T22 | UAT-04, UAT-06 | Built; GST basis open (BR-12) |
 | FR-07 | Send-back with a reason | US-07 | BR-14, BR-15 | UC-04 | `decide_quote` | `test_send_back_requires_reason_and_returns_to_costing`, `test_quote_versions_increment_after_send_back` | UAT-07, UAT-08 | Built |

@@ -17,11 +17,16 @@
 | 23.6-month cash payback; ~₹14.8L cash need | `finance/full_model.py`; `docs/finance/model_audit.md` | Derived from assumptions | 64/64 selected cells match |
 | 5,400 gross / 4,680 net capacity hours | `numbers.json`; `docs/finance/capacity_and_queue.md` | Derived | Read; not cash savings |
 | Application workflow and costing engine exist | `application/`, `engine/` | Built | Read; test suite run |
-| Python automated regression suite passes | pytest | Observed (test run) | Run: 163 collected; exit 0 (latest recorded run; see execution evidence log) |
+| 166 Python tests exist; 153 ran and passed in a clean check, 13 need FastAPI | pytest | Observed (test run), partly | Run: 153 passed with the API tests excluded. The 12 API tests and 1 server-import test need FastAPI and were not run in the check environment. Run `pytest` once on your own machine |
 | 64 finance reconciliation cells match | `finance/reconcile.py` | Observed (test run) | Run: 64/64 |
-| 651 consistency checks pass | `scripts/check_consistency.py` | Observed (test run) | Run: 651/651 |
+| 670 consistency checks pass | `scripts/check_consistency.py` | Observed (test run) | Run: 670/670 |
+| Scripted developer run of 3 workflow tasks (15 steps) behaves as documented | `scripts/developer_task_run.py`; `docs/validation/developer_task_run.md` | Observed (developer run), Synthetic | Run: reproducible; no person took part, so this is not user research |
+| 20 role-pack checks pass (PM plan, RAID, BA rule coverage, workbook, deck) | `scripts/check_role_packs.py` | Observed (test run) | Run: 20/20 |
 | 26 portfolio release checks pass | `scripts/portfolio_release_audit.py` | Observed (test run) | Run: 26/26 |
-| Monthly workbook has 439 formulas and 0 stored formula errors after Calc recalc | monthly workbook | Observed (file inspection) | Recalculated with LibreOffice; 6/6 visible audit checks PASS |
+| Monthly workbook has 490 formulas and 0 stored formula errors after Calc recalc | monthly workbook | Observed (file inspection) | Recalculated with LibreOffice; 6/6 visible audit checks PASS; Tornado check PASS. 96 variance cells are blank by design |
+| Win-back and lost-RFQ rate move the answer most | workbook `Tornado`; `docs/finance/tornado.png` | Derived; ranges are Judgement | Recalculated; ranges differ in size, so the rank shows where uncertainty is judged to be |
+| 12-week plan: gates on days 15, 25 and 35; critical path runs through the pilot; ends day 58 of 60 | `docs/pm/plan.csv`; `scripts/make_pm_artifacts.py` | Judgement (planning estimates) | Run: generated and checked |
+| Provider effort 120 person-days | `docs/pm/resourcing_effort.md` | Judgement | Run; set to agree with the earlier 24 person-week plan, so it is a consistency check, not independent proof |
 | Product analytics represent real users | `data/product_events_sample.csv` | Synthetic | Read; not real usage |
 | Monthly actual-vs-budget sample is real company data | `data/finance_actual_vs_budget_sample.csv` | Synthetic | Read; not actuals |
 | UAT scripts exist | `docs/ba/uat_scripts.md` | Built | Read; no completed UAT |
@@ -32,16 +37,3 @@
 | Candidate independently checked annual report pages | Existing source register only | Unverified | Must complete dated source check |
 
 **Claim boundary:** “built”, “modelled”, “tested locally” and “synthetic example” are allowed with scope. Do not say “saved”, “recovered”, “reduced”, “adopted” or “deployed” as a real result.
-
-
-## Evidence-gap status (this release)
-
-| Gap | What this archive can prove now | What remains genuinely external |
-|---|---|---|
-| Project execution | Local automated test suite, finance reconciliation, workbook validation and consistency checks; see `docs/validation/EXECUTION_EVIDENCE_LOG.md` | Public deployment, independent code review, production use, real operational outcomes |
-| APM / PM | Product hypotheses, metrics, experiment protocol, blank usability capture template and pre-registered formative gates | Five real task sessions, observed friction, iteration and retest |
-| Consulting | Explicit top-down arithmetic, transparent unmeasured bottom-up gap, weighted options and numerical rank-flip sensitivity | Practitioner challenge, representative stage-time evidence and validated economics |
-| Business Analyst | Traceability, 12 UAT scripts and blank execution log | Independent execution by business-role testers and named stakeholder acceptance |
-| Finance Analyst | Corrected sensitivity arithmetic, model map, workbook validation and reconciliation | Permissioned ledger data, approved contribution definition, actuals and independent finance review |
-
-No external activity is simulated or represented as completed. A completed template, a test run, a synthetic dataset and a real stakeholder sign-off are different evidence classes.

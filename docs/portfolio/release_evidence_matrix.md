@@ -1,18 +1,18 @@
-# Release evidence matrix — v3.4.1 portfolio release
+# Release evidence matrix — v3.2.1 portfolio release
 
-**Status date:** 23 November 2026. This is an internal work-sample evidence matrix, not a recruiter score. **The repository artefacts and reproducible portfolio checks are complete for this release.** Rows marked as requiring real-world evidence describe a separate, future live-pilot phase; they are not unfinished code or documentation tasks.
+**Status date:** 18 November 2026. This is an internal work-sample evidence matrix, not a recruiter score. **The repository artefacts and reproducible portfolio checks are complete for this release.** Rows marked as requiring real-world evidence describe a separate, future live-pilot phase; they are not unfinished code or documentation tasks.
 
 | Evidence area | Current evidence | Status | What is still required for a stronger claim |
 |---|---|---|---|
 | Business problem | Hypothetical brief with explicit inputs and boundaries | Built / assumption-led | Confirm the problem with actual practitioners |
 | Costing engine | Decimal-based engine, quote logic, 24 reference checks | Built and tested | Real price parity with approved rates / quotes |
-| RFQ application | Local workflow, server-derived roles, approval and audit trail | Built and technically tested | Independent business UAT, security review and deployment approval |
+| RFQ application | Local workflow, server-derived roles, approval and audit trail | Built and technically tested | Business UAT, security review and deployment approval |
 | Finance case | Existing project/cash model, Python reconciliation, monthly model | Built and model-reconciled | Replace assumptions with permissioned data; accounting review |
 | Monthly variance | Tested Decimal engine and formula-driven workbook; actual cells blank | Method demonstrated; sample data excluded | Load reconciled monthly actuals from a ledger / ERP extract |
 | BA requirements | Rules, use cases, process artefacts, stories, traceability, UAT scripts | Documentation built; discovery pending | Real elicitation and executed UAT / sign-off |
 | Product strategy | PRD, decision log, prioritisation, metrics, pilot and usability protocol | Product work sample built; user evidence pending | Real interviews, moderated task sessions and iteration |
 | Product analytics | SQL/event funnel and cohorts on synthetic events | Method demonstrated; synthetic | Instrument actual events and define valid denominators |
-| Consulting recommendation | 16-slide deck with red-team, decision-changing facts and numeric sensitivity; source register | Desk research + modelled case | Independent practitioner challenge and validated business inputs |
+| Consulting recommendation | Answer-first 16-slide deck and source register | Desk research + modelled case | Independent practitioner challenge and validated business inputs |
 | Industry research | ACMA FY25 and ICRA FY27 outlook plus primary company reports | Sourced external context | Revisit before reuse; assess comparability and date |
 | AI governance | Disclosure, no-fabrication policy and source-check requirement | Documented | Candidate must be able to explain and verify all AI-assisted work |
 | Commercial outcomes | No observed client / pilot outcomes | Not evidenced | Permissioned baseline and post-pilot measurement |

@@ -46,30 +46,19 @@ The following is an illustrative teaching example. It is not company actuals and
 
 Price-volume-mix method: volume effect at budget price/margin; price effect at actual volume and budget mix; mix/margin effect as the reconciled residual. Timing is reported separately. Reconcile to ledger before calling a variance real.
 
-## 4. One-factor sensitivity
-Approximate annual net operating contribution; one input changes while others are held constant.
+## 4. Tornado: which input moves the answer most
+Live version: sheet `Tornado` in the monthly workbook (formulas, rank column and a check against `Dashboard!E9`). Picture: `docs/finance/tornado.png`.
 
-| Input | Downside | Base | Upside | Approximate net contribution |
-|---|---:|---:|---:|---:|
-| Effective win-back | 12.5% | 25% | 40% | ₹8.8L / ₹19.6L / ₹32.6L |
-| Contribution margin | 10% | 12% | 14% | ₹16.0L / ₹19.6L / ₹23.2L |
-| AOV | ₹16L | ₹20L | ₹24L | ₹15.28L / ₹19.60L / ₹23.92L |
-| Annual run cost | ₹3L | ₹2L | ₹1.5L | ₹18.6L / ₹19.6L / ₹20.1L |
-| Lost-RFQ rate | 3% | 5% | 7% | ₹10.96L / ₹19.6L / ₹28.24L |
+| Rank | Input | Low to high | Net contribution, low / base / high (INR lakh) |
+|---:|---|---|---|
+| 1 | Effective win-back | 12.5% to 36% | 8.8 / 19.6 / 29.1 |
+| 2 | Lost-RFQ rate | 3% to 7% | 11.0 / 19.6 / 28.2 |
+| 3 (tie) | Monthly RFQs | 48 to 72 | 15.3 / 19.6 / 23.9 |
+| 3 (tie) | Average order value | INR 16 to 24 lakh | 15.3 / 19.6 / 23.9 |
+| 5 | Contribution margin | 10% to 14% | 16.0 / 19.6 / 23.2 |
+| 6 | Annual run cost | INR 3 to 1.5 lakh | 18.6 / 19.6 / 20.1 |
 
-**Largest drivers:** effective win-back and lost-RFQ rate. They are also not observed. Validate the eligible loss denominator and incremental conversion before trusting the base case.
-
-### AOV sensitivity calculation (corrected)
-
-Formula held constant: `9 recovered RFQs × AOV × 12% contribution margin − ₹2.0L annual run cost`.
-
-| AOV | Gross recovered contribution | Less run cost | Net operating contribution |
-|---:|---:|---:|---:|
-| ₹16L | 9 × ₹16L × 12% = ₹17.28L | ₹2.00L | **₹15.28L** |
-| ₹20L | 9 × ₹20L × 12% = ₹21.60L | ₹2.00L | **₹19.60L** |
-| ₹24L | 9 × ₹24L × 12% = ₹25.92L | ₹2.00L | **₹23.92L** |
-
-The prior ₹12.4L / ₹26.8L endpoints were arithmetic errors and are superseded. This sensitivity changes AOV only; recovered RFQs, margin and run cost remain fixed. These are model outputs, not realised benefits.
+Two cautions. The ranges are my judgement and are not the same size, so the order shows where I think the uncertainty is. For the same percentage change, every multiplied driver has the same effect, which is why the last four are close. Win-back and the lost-RFQ rate lead, and neither is observed. Validate the eligible-loss denominator and the incremental conversion before trusting the base case.
 
 ## 5. Visible workbook controls
-The workbook contains both `Control Checks` and a dedicated `Audit Checks` sheet. The current workbook contains 439 formulas; the monthly validator reproduces adoption 25%, recovered contribution ₹21.6L, net ₹19.6L and 4.9-month operating payback. The six visible `Audit Checks` rows are cached as PASS in the delivered workbook. A formula count is not proof every formula is semantically correct; recalculate in Excel/LibreOffice after any workbook edit and inspect formula errors.
+The workbook has two visible check sheets. `Control Checks` has six base-case rows. `Audit Checks` shows the same headline numbers with a PASS or FAIL flag and a plain-English note on each. `Tornado` ends with its own check against the dashboard. The validation script `scripts/validate_monthly_workbook.py` reproduces adoption 25%, recovered contribution INR 21.6 lakh, net INR 19.6 lakh and 4.9-month operating payback. A formula count is not proof that every formula is right: recalculate in Excel or LibreOffice and look for errors (the shipped file was recalculated in LibreOffice with 0 errors).

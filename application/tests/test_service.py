@@ -198,15 +198,6 @@ def test_assignment_owner_and_due_date_can_be_updated(svc):
     assert updated["due_date"] == new_due
 
 
-def test_assignment_update_rejects_past_due_date(svc):
-    rfq = make_rfq(svc)
-    past_due = (date.today() - timedelta(days=5)).isoformat()
-    with pytest.raises(ServiceError, match="Due date cannot be in the past"):
-        svc.update_rfq(rfq["id"], {"due_date": past_due}, "Aditi", "estimator")
-    unchanged = svc.get_rfq(rfq["id"])
-    assert unchanged["due_date"] == rfq["due_date"]
-
-
 def test_multi_part_quote_aggregates_set_value_and_keeps_line_snapshots(svc):
     rfq = make_rfq(svc)
     svc.update_rfq(rfq["id"], {"status": "costing"}, "Aditi", "estimator")
@@ -222,3 +213,27 @@ def test_multi_part_quote_aggregates_set_value_and_keeps_line_snapshots(svc):
     assert tier["lines"][0]["description"] == "Mounting bracket"
     assert tier["lines"][1]["description"] == "Spindle sleeve"
     assert Decimal(quote["annual_value"]) == sum((Decimal(line["result"]["annual_value"]) for line in tier["lines"]), Decimal("0"))
+
+
+def test_assignment_update_rejects_past_due_date(svc):
+    rfq = make_rfq(svc)
+    past_due = (date.today() - timedelta(days=5)).isoformat()
+    with pytest.raises(ServiceError, match="Due date cannot be in the past"):
+        svc.update_rfq(rfq["id"], {"due_date": past_due}, "Aditi", "estimator")
+    assert svc.get_rfq(rfq["id"])["due_date"] == rfq["due_date"]
+
+
+def test_overdue_rfq_can_be_reassigned_with_its_unchanged_due_date(svc):
+    import sqlite3
+
+    rfq = make_rfq(svc)
+    past_due = (date.today() - timedelta(days=3)).isoformat()
+    with sqlite3.connect(svc.db_path) as con:
+        con.execute("UPDATE rfqs SET due_date=? WHERE id=?", (past_due, rfq["id"]))
+    updated = svc.update_rfq(rfq["id"], {"owner": "Ravi Nair", "due_date": past_due}, "Aditi", "estimator")
+    assert updated["owner"] == "Ravi Nair"
+    assert updated["due_date"] == past_due
+    other_past = (date.today() - timedelta(days=9)).isoformat()
+    with pytest.raises(ServiceError, match="Due date cannot be in the past"):
+        svc.update_rfq(rfq["id"], {"due_date": other_past}, "Aditi", "estimator")
+

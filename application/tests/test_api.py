@@ -87,20 +87,6 @@ def test_validation_errors_are_clear(client):
     assert new_rfq(client, h, due_date="2000-01-01").status_code == 400
 
 
-def test_update_rfq_rejects_past_due_date(client):
-    h = sign_in(client, "estimator")
-    created = new_rfq(client, h).json()
-    response = client.patch(
-        f"/api/rfqs/{created['id']}",
-        json={"due_date": "2000-01-01"},
-        headers=h,
-    )
-    assert response.status_code == 400
-    assert "Due date cannot be in the past" in response.json()["detail"]
-    unchanged = client.get(f"/api/rfqs/{created['id']}", headers=h).json()
-    assert unchanged["due_date"] == created["due_date"]
-
-
 def test_pagination_header_and_search(client):
     h = sign_in(client, "estimator")
     for i in range(4):
@@ -157,3 +143,17 @@ def test_costing_errors_come_back_as_400(client):
         "quote_date": "2026-11-05", "selected_volume": 90000,
         "parts": [{"description": "Invalid part", "gross": "0.5", "net": "0.9"}]}, headers=h)
     assert r.status_code == 400 and "net weight exceeds gross weight" in r.json()["detail"]
+
+
+def test_update_rfq_rejects_past_due_date(client):
+    h = sign_in(client, "estimator")
+    created = new_rfq(client, h).json()
+    response = client.patch(
+        f"/api/rfqs/{created['id']}",
+        json={"due_date": "2000-01-01"},
+        headers=h,
+    )
+    assert response.status_code == 400
+    assert "Due date cannot be in the past" in response.json()["detail"]
+    unchanged = client.get(f"/api/rfqs/{created['id']}", headers=h).json()
+    assert unchanged["due_date"] == created["due_date"]

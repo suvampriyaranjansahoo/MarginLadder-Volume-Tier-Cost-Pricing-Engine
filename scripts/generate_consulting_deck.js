@@ -150,6 +150,22 @@ function bullets(slide,items,x,y,w,lineH=0.47,fontSize=12.5,color=C.ink) {
   card(s,x[2],1.6,w,3.75,'Option C — Full platform / ERP integration','Upside\n• Broadest future automation\n\nRisk\n• Highest cost, integration and change exposure before root cause is known\n\nDecision\nDefer until trace, price parity, UAT and capacity gates pass.',C.red,12.4);
   pill(s,'RECOMMEND OPTION B — STAGED, REVERSIBLE, MEASURED',3.8,5.85,5.8,C.greenPale,C.green);
 }
+// 7b — option weights sensitivity
+{
+  const s=base('The first option changes only if the decision weights change materially.','OPTIONS / SENSITIVITY');
+  const H=(t)=>({text:t,options:{bold:true,color:C.white,fill:{color:C.navy},fontFace:'Aptos',fontSize:12,align:'left',valign:'middle'}});
+  const Cc=(t,win=false)=>({text:t,options:{bold:win,color:win?C.green:C.ink,fill:{color:win?'E3F4EC':C.white},fontFace:'Aptos',fontSize:12.5,align:'left',valign:'middle'}});
+  s.addTable([
+    [H('Option (scores 1 to 5)'),H('Base weights'),H('Benefit-heavy weights')],
+    [Cc('Register and queue visibility',true),Cc('4.45  (first)',true),Cc('3.70')],
+    [Cc('Process redesign only'),Cc('3.75'),Cc('2.90')],
+    [Cc('Dedicated costing screen'),Cc('3.60'),Cc('3.80  (first)',true)],
+    [Cc('Full integrated platform'),Cc('2.20'),Cc('3.60')],
+  ],{x:0.7,y:1.45,w:11.9,colW:[5.0,3.2,3.7],rowH:0.46,border:{type:'solid',color:C.line,pt:1}});
+  card(s,0.7,3.95,5.75,2.05,'Weights used','Base: evidence speed 25%, reversibility 20%, control 20%, potential benefit 20%, delivery risk 15%.\nBenefit-heavy: benefit 60%, the other four 10% each.',C.teal,12.5);
+  card(s,6.85,3.95,5.75,2.05,'What it means','The costing screen leads only when potential benefit dominates the weights. That does not show costing is the real bottleneck. The Week 1 stage trace decides it.',C.gold,12.5);
+  txt(s,'Basis: scores and weights are analyst judgement, not user-validated preference. No external figure is used. Detail: docs/consulting/consulting_challenge_pack.md.',0.7,6.3,11.9,0.4,{fontSize:10.5,color:C.muted});
+}
 // 8 — MVP design
 {
   const s=base('The MVP should improve control and clarity—not replace commercial judgement.','PRODUCT / OPERATING MODEL');
@@ -201,6 +217,31 @@ function bullets(slide,items,x,y,w,lineH=0.47,fontSize=12.5,color=C.ink) {
   card(s,6.8,1.5,5.8,3.75,'Release next stage only if','• Stage data explains the cycle and supports the selected intervention.\n• Price parity meets the pre-agreed tolerance.\n• No critical/high workflow or permission defect remains.\n• Plant capacity can fulfil recovered demand.\n• Business owner accepts the workflow and measurement plan.\n• Economics remain positive in the agreed downside case.',C.green,13.5);
   rect(s,0.75,5.65,11.75,0.72,C.navy,0.1,C.navy);
   txt(s,'DECISION: MEASURE → PILOT → REVIEW → SCALE OR STOP',1.0,5.86,11.25,0.28,{fontSize:16,bold:true,color:C.white,align:'center'});
+}
+// 12b — red team
+{
+  const s=base('The recommendation must survive three strong counter-arguments.','RED TEAM');
+  card(s,0.6,1.5,3.05,3.0,'1. “The 25% win-back is made up.”','Correct. It is an assumption, not a forecast. Remove the recovery benefit from committed economics until a valid comparison shows incremental lift.',C.red,13);
+  card(s,4.69,1.5,3.05,3.0,'2. “A register adds admin work.”','A real risk. Measure task time and waiting intervals. Simplify or stop if the queue time does not improve.',C.gold,13);
+  card(s,8.78,1.5,3.05,3.0,'3. “Faster quotes may not pay.”','A real risk: they may be unprofitable or impossible to fulfil. Require price parity, contribution floors and confirmed plant capacity before a quote is released.',C.teal,13);
+  rect(s,0.7,4.9,11.95,0.72,C.navy,0.1,C.navy);
+  txt(s,'DECISION: FUND MEASUREMENT AND A REVERSIBLE PILOT ONLY. DO NOT BUILD FROM THE THEORETICAL POOL.',0.95,5.11,11.45,0.3,{fontSize:14,bold:true,color:C.white,align:'center'});
+  txt(s,'Basis: judgement and the case model. No external figure is used.',0.7,5.9,9,0.3,{fontSize:10,color:C.muted});
+}
+// 12c — what would change my mind
+{
+  const s=base('Five observable facts would change the recommendation.','PRE-COMMITTED EVIDENCE');
+  const H=(t)=>({text:t,options:{bold:true,color:C.white,fill:{color:C.navy},fontFace:'Aptos',fontSize:12,align:'left',valign:'middle'}});
+  const Cc=(t)=>({text:t,options:{color:C.ink,fill:{color:C.white},fontFace:'Aptos',fontSize:12.5,align:'left',valign:'middle'}});
+  s.addTable([
+    [H('If we observe'),H('Then the decision flips to')],
+    [Cc('Active costing is over 40% of the working-time cycle in a representative sample'),Cc('Build the costing screen first')],
+    [Cc('Approval waiting is the largest avoidable stage'),Cc('Build the approval queue and authorised delegation')],
+    [Cc('Customer holds dominate the elapsed time'),Cc('Fix intake and clarification; claim no software queue benefit')],
+    [Cc('Closed-lost reasons are mainly price, product or lead time'),Cc('Remove the win-back benefit from the business case')],
+    [Cc('Plant capacity or contribution floors fail'),Cc('Stop scaling; keep only controls with standalone value')],
+  ],{x:0.7,y:1.5,w:11.9,colW:[6.9,5.0],rowH:0.68,border:{type:'solid',color:C.line,pt:1}});
+  txt(s,'Basis: judgement. Thresholds such as 40% come from the case go/no-go memo (docs/go_no_go_memo.md), not from external data.',0.7,6.4,11.9,0.4,{fontSize:10.5,color:C.muted});
 }
 // 13 — sources and limitations
 {

@@ -22,7 +22,7 @@ A staged delivery plan for a hypothetical plant: what ships in which order, who 
 
 ## 60-second walkthrough
 
-"I did not plan a big build. I planned a 30-60-90 programme with three gates. Week 1 traces ten real RFQs and asks the plant one capacity question. If costing is not the bottleneck, the full build stops there. If it is, the costing screen follows, and the second payment depends on the register being in daily use. Each gate has an owner and a written pass rule, and the pilot rules were fixed before any data."
+"I did not plan a big build. I planned a 30-60-90 programme with three gates. Week 1 would trace ten recent RFQs and asks the plant one capacity question. If costing is not the bottleneck, the full build stops there. If it is, the costing screen follows, and the second payment depends on the register being in daily use. Each gate has an owner and a written pass rule, and the pilot rules were fixed before any data."
 
 ## Honest claim boundary
 
@@ -31,4 +31,4 @@ Say "designed and documented" for the plan, gates and UAT scripts. Do not say yo
 
 ## Five-minute evidence pack
 
-`docs/pm/12_week_delivery_plan.md`, `docs/pm/raci.md`, `docs/pm/raid_log.md`, `docs/pm/change_control_and_communications.md`, `docs/pm/status_reports_templates.md`, `docs/pm/resourcing_effort.md`.
+`docs/pm/schedule_and_critical_path.md`, `docs/pm/raci_tasks.md`, `docs/pm/raid_log.md`, `docs/pm/change_control_and_communications.md`, `docs/pm/status_reports_templates.md`, `docs/pm/resourcing_effort.md`.
