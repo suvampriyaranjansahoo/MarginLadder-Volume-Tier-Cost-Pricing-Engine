@@ -35,7 +35,7 @@ def new_rfq(client, h, **o):
 def test_health_is_public_and_everything_else_needs_a_session(client):
     assert client.get("/api/health").json()["status"] == "ok"
     for path in ("/api/rfqs", "/api/dashboard", "/api/audit", "/api/kpis", "/api/finance-case",
-                 "/api/analysis", "/api/trace/summary", "/api/me"):
+                 "/api/analysis", "/api/sector-benchmark", "/api/trace/summary", "/api/me"):
         assert client.get(path).status_code == 401, path
     assert client.get("/api/rfqs", headers={"Authorization": "Bearer nonsense"}).status_code == 401
 
@@ -105,6 +105,17 @@ def test_finance_and_analysis_endpoints(client):
     a = client.get("/api/analysis", headers=h).json()
     assert 0.5 < a["queueing"]["today"]["wait_days"] < 0.65
     assert a["capacity"]["break_even_fit"] == pytest.approx(0.463, abs=0.001)
+
+
+def test_sector_benchmark_and_forging_scenario_endpoints(client):
+    h = sign_in(client, "estimator")
+    benchmark = client.get("/api/sector-benchmark", headers=h).json()
+    assert "not affiliated" in benchmark["classification"]
+    assert benchmark["metrics"][0]["metric"] == "EBITDA margin"
+    base = client.post("/api/forging-scenario", json={}, headers=h).json()
+    shock = client.post("/api/forging-scenario", json={"steel_price_change_pct": 0.1}, headers=h).json()
+    assert float(shock["unit_contribution_inr"]) < float(base["unit_contribution_inr"])
+    assert "Illustrative scenario" in base["classification"]
 
 
 def test_trace_import_only_for_the_estimation_head(client):

@@ -30,6 +30,8 @@ The interactive dashboard surfaces:
 - Application KPIs, queue analysis and an append-only audit trail
 - Explicit labels separating application data, simulated diagnostics and assumption-based financial outputs
 
+For a role-by-role recruiter review, see the [recruiter evidence plan](docs/portfolio/recruiter_excellence_plan.md). The [forging economics simulator](docs/finance/forging_economics_simulator.md) documents the new interactive sector sensitivity view and its limits.
+
 ## The decision
 
 Quotation cycle time is modelled at 9 working days against a 4-day target. Is an ₹8 lakh build justified?

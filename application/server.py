@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from finance import capacity as capacity_model
-from finance import full_model, queueing
+from finance import forging_scenarios, full_model, queueing
 from finance.case_model import output_dict as finance_output, scenario_table as finance_scenarios
 
 from application.service import (
@@ -141,6 +141,17 @@ class TraceImportRequest(BaseModel):
     batch_id: str | None = Field(default=None, max_length=60)
 
 
+class ForgingScenarioRequest(BaseModel):
+    """Illustrative scenario inputs; each percentage is supplied as a decimal."""
+
+    steel_price_change_pct: float = Field(default=0, ge=-0.5, le=0.5)
+    forging_yield_pct: float = Field(default=0.88, ge=0.5, le=0.99)
+    machining_cycle_min: float = Field(default=3.2, ge=0.5, le=30)
+    energy_cost_change_pct: float = Field(default=0, ge=-0.5, le=1)
+    utilisation_pct: float = Field(default=0.78, ge=0.3, le=1)
+    working_capital_days: float = Field(default=45, ge=0, le=365)
+
+
 def _raise_http(exc: Exception) -> NoReturn:
     if isinstance(exc, NotFoundError):
         raise HTTPException(status_code=404, detail=str(exc))
@@ -213,6 +224,21 @@ def finance_case(user: dict[str, Any] = Depends(current_user)) -> dict[str, Any]
         "net_capacity": full_model.net_capacity_value(),
         "cash_view": {k: v for k, v in full_model.financials().items() if k in {"npv", "irr", "payback_years", "deepest_cash_need"}},
     }
+
+
+@app.get("/api/sector-benchmark")
+def sector_benchmark(user: dict[str, Any] = Depends(current_user)) -> dict[str, object]:
+    """Audited public FY26 range reference, separate from the synthetic case."""
+    return forging_scenarios.public_benchmark()
+
+
+@app.post("/api/forging-scenario")
+def forging_scenario(request: ForgingScenarioRequest, user: dict[str, Any] = Depends(current_user)) -> dict[str, str]:
+    """Recalculate illustrative unit economics; no data is persisted."""
+    try:
+        return forging_scenarios.scenario_dict(**request.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.get("/api/analysis")
