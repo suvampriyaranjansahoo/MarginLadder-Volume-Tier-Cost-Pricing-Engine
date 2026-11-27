@@ -695,7 +695,4 @@ Computer Science Engineering | Financial Analytics | Business Analysis | Product
 - LinkedIn: [LinkedIn Profile](https://linkedin.com/in/suvam-priyaranjan-sahoo-18b7412bb)
 - Portfolio: [Personal Portfolio](https://suvampriyaranjansahooportfolio.vercel.app)
 
----
 
-*MarginLadder is an independently developed software and business analytics project. Its application components, financial modelling framework and analytical deliverables are project implementations. Commercial scenario inputs and sample operational records are illustrative; projected benefits are not realised business outcomes.*
->>>>>>> 73aaf5cd41639026fce01af90e51fd3a0d8a136b
