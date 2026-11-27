@@ -1,102 +1,116 @@
 # MarginLadder
-### Should a manufacturer fund RFQ-to-quote automation? A modelled investment case, with a working prototype.
+### RFQ-to-quote intelligence: a working workflow app, costing engine, and investment case
 
-**Suvam Priyaranjan Sahoo** · [GitHub](https://github.com/suvampriyaranjansahoo) ·
-[LinkedIn](https://linkedin.com/in/suvam-priyaranjan-sahoo-18b7412bb) ·
-[Portfolio](https://suvampriyaranjansahooportfolio.vercel.app)
+**Suvam Priyaranjan Sahoo** · [GitHub](https://github.com/suvampriyaranjansahoo) · [LinkedIn](https://linkedin.com/in/suvampriyaranjansahoo-18b7412bb) · [Portfolio](https://suvampriyaranjansahooportfolio.vercel.app)
 
-> **Scope, stated up front.** The case is **hypothetical** (a Pune auto-components maker). It has **no production users**,
-> **no real customer interviews**, no UAT sign-off and no realised savings. Rates and records are **synthetic**
-> or assumption-led. Every figure below is a modelled scenario, not a measured result.
+> **Portfolio case, not a production claim.** MarginLadder models a hypothetical Pune auto-components manufacturer. The records, rates and business-case inputs are synthetic or assumption-led; no production users, customer interviews, UAT sign-off, deployment, or realised savings are claimed.
+
+## See the product output
+
+This is a locally runnable, interactive portfolio MVP. Recruiters can see the workflow, financial decision outputs and audit trail—not just documentation.
+
+![MarginLadder interactive dashboard demo](docs/dashboard_demo.gif)
+
+### Dashboard views
+
+<p align="center">
+  <img src="docs/dash_overview.png" alt="RFQ operations overview dashboard" width="49%" />
+  <img src="docs/dash_ops.png" alt="Operations dashboard with workflow measures" width="49%" />
+</p>
+<p align="center">
+  <img src="docs/dash_decision.png" alt="Investment decision dashboard" width="49%" />
+  <img src="docs/dash_risk.png" alt="Risk and sensitivity dashboard" width="49%" />
+</p>
+
+The interactive dashboard surfaces:
+
+- RFQ status, owners, due dates, approval queue and quote activity
+- Reproducible tiered costing and versioned quote snapshots
+- Business-case economics, payback and win-back sensitivity
+- Application KPIs, queue analysis and an append-only audit trail
+- Explicit labels separating application data, simulated diagnostics and assumption-based financial outputs
 
 ## The decision
 
-Quotation cycle time is 9 working days against a 4-day target. Is a ₹8 lakh build justified?
+Quotation cycle time is modelled at 9 working days against a 4-day target. Is an ₹8 lakh build justified?
 
-**Recommendation: do not approve the full build yet.** Measure stage timestamps and rework first, pilot a reversible
-queue-visibility and approval workflow, and automate costing only if data shows costing is the bottleneck.
+**Recommendation: do not approve the full build yet.** First capture stage timestamps and rework, then pilot a reversible queue-visibility and approval workflow. Automate costing only if observed data shows it is the bottleneck.
 
-## Headline numbers (all derived from `numbers.json`, each tagged Brief / Assumption / Derived)
+## Headline outputs
 
-| Metric | Value | Type |
+| Metric | Modelled output | Classification |
 |---|---:|---|
-| Annual RFQs / lost at 5% | 720 / 36 | Brief, derived |
-| Lost-RFQ contribution pool (₹20 lakh AOV, 12% margin) | ₹86.4 lakh | Derived |
-| Recovered margin at 25% / 12.5% win-back | ₹21.6 / ₹10.8 lakh | Assumption |
-| Operating payback (base / conservative) | 4.9 months / 10.9 months | Derived, pre-tax |
+| Annual RFQs / lost at 5% | 720 / 36 | Brief / derived |
+| Lost-RFQ contribution pool | ₹86.4 lakh | Derived |
+| Recovered margin at 25% / 12.5% win-back | ₹21.6 / ₹10.8 lakh | Assumption-led |
+| Operating payback (base / conservative) | 4.9 / 10.9 months | Derived, pre-tax |
 | Cash payback after tax and working capital | 23.6 months | Derived |
-| Deepest cash need | ₹14.8 lakh | Derived |
 | 3-year IRR (with / without working-capital release) | 75.8% / 43.0% | Derived |
-| Break-even win-back (incl. run cost / fee only) | 11.6% / 9.3% | Derived |
-| Estimator hours released (gross / net) | 5,400 / 4,680 | Derived, not cash |
-| Estimator load today / target | 78% / 31% | Derived |
-| Queue wait today | 0.57 day | Derived (queueing model) |
-| Capacity break-even fit | 46% | Derived |
+| Estimator hours released (gross / net) | 5,400 / 4,680 | Derived; capacity, not cash |
 
-Read this carefully: the 4.9-month payback is operating and pre-tax. The cash view is 23.6 months. Released estimator
-hours are capacity, not savings. The ₹86.4 lakh is a ceiling, not a forecast.
+The operating-payback result is not the cash result. The contribution pool is a ceiling, not a forecast. Full claim traceability is in [the evidence ledger](docs/portfolio/evidence_ledger.md).
 
-## What is built
-
-| Layer | Where | What it shows |
-|---|---|---|
-| Financial model | `model/MarginLadder_Monthly_FP&A_Model.xlsx`, `finance/` | Driver-based monthly plan, about 490 formulas, tornado, audit checks |
-| Python twin | `finance/reconcile.py` | Recomputes the workbook; 64 of 64 cells match |
-| Decision layer | `finance/unit_economics.py`, `finance/scenarios.py` | Tier boundaries, cost-line shares, shock sensitivity, break-even volume, downside/base/upside, NPV threshold |
-| Costing engine | `engine/cost_engine.py` | Decimal arithmetic, dated rate master, quote snapshots, visible errors |
-| Workflow app | `application/` | FastAPI + SQLite, role-gated approvals, audit events, API and hardening tests |
-| Analytics | `analytics/`, `tracekit/` | SQL findings, product metrics, RICE sensitivity, sample-size tools |
-| Public-data check | `realdata/`, `docs/finance/real_company_benchmark.md` | Bharat Forge FY26 audited filing (NSE), recomputed ratios, DuPont, cash cycle, and the case's assumptions tested against them |
-| Extension | `model/MarginLadder_finance_extension.xlsx` | DCF, reverse DCF, DuPont, comparables, decision tree |
-| Documents | `docs/` | PRD, business rules, traceability, UAT scripts (not yet executed), RAID, deck |
-
-## Run it
+## Run the interactive demo
 
 ```bash
 pip install -r requirements-dev.txt
-pytest                                   # tests live inside each package
-python -m finance.reconcile              # workbook vs Python, 64 cells
-python -m realdata.benchmark             # real-company benchmark from the audited filing
-python scripts/check_consistency.py      # figures in docs match numbers.json
-python scripts/portfolio_release_audit.py
-uvicorn application.server:app --reload  # local demo at http://127.0.0.1:8000
-python scripts/e2e_ui_check.py           # optional browser check of the full workflow (needs playwright)
+uvicorn application.server:app --reload
 ```
 
-CI (`.github/workflows/ci.yml`) runs ruff, mypy, pytest with an 85% coverage gate and the checks above.
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000). On first use, the app creates a local SQLite demo database with fictional RFQs and demo credentials at `application/data/demo_credentials.txt` (gitignored).
 
-## Reality check on public data
+Suggested recruiter walkthrough:
 
-The case is hypothetical, so I tested its assumptions against one real, audited filing: Bharat Forge (Pune), consolidated FY26,
-copied from the NSE filing (`realdata/bharat_forge_fy26.py`, source link inside). Recomputed debt/equity matches the company's own 0.72.
+1. Sign in with a demo account and inspect the RFQ workspace and KPI cards.
+2. Choose an RFQ, calculate three volume prices, and review the saved quote snapshot.
+3. Sign in as Sales Head or Deputy to approve a quote over the illustrative ₹25 lakh threshold.
+4. Review business-case economics, sensitivity, queue analysis and the activity trail.
+5. Open the original [finance dashboard](http://127.0.0.1:8000/prototype/business_dashboard.html) for an additional interactive decision view.
 
-| Case assumption | Case | Real reference | Reading |
-|---|---:|---:|---|
-| Quote margin | 12% | 17.4% EBITDA, 14.0% Forgings segment | Not aggressive |
-| Material share of price | 38.7% | 45.1% of revenue | Close |
-| Working capital days | 45 | 85 receivable days, 136-day cash cycle | **Light.** Re-run: IRR 75.8% falls to 44.4% and 28.4%; cash payback 1.96 to 2.33 and 2.54 years |
-| EN8 steel rate | ₹78/kg | ₹58 to 70/kg typical in undated seller listings | Above typical; steel up 25 to 36% year on year |
+## What is built
 
-One company, one year, a far larger business than the case's. Treat it as a range check, not proof. Details and limits:
-`docs/finance/real_company_benchmark.md`.
+| Layer | Location | Evidence of capability |
+|---|---|---|
+| Workflow application | `application/` | FastAPI + SQLite, role-gated approvals, audit events and dashboard APIs |
+| Costing engine | `engine/cost_engine.py` | Decimal arithmetic, dated rates, tier pricing and quote snapshots |
+| Financial model | `model/`, `finance/` | Driver-based monthly plan, cash view, NPV/IRR, tornado and reconciliation |
+| Decision layer | `finance/unit_economics.py`, `finance/scenarios.py` | Sensitivity, break-even volume, downside/base/upside scenarios |
+| Analytics | `analytics/`, `tracekit/` | SQL findings, product metrics, queue and sample-size tools |
+| Documentation | `docs/` | PRD, rules, traceability, UAT design, finance and delivery evidence |
 
-## Evidence discipline
+## Validation
 
-`docs/portfolio/evidence_ledger.md` tags every claim as Brief, Assumption, Derived, Built, Synthetic or Unverified, and
-lists what is not claimed (adoption, deployment, realised benefit). `docs/portfolio/ai_use_disclosure.md` states where
-AI assisted and how outputs were verified.
+```bash
+pytest
+python -m finance.reconcile
+python -m realdata.benchmark
+python scripts/check_consistency.py
+python scripts/portfolio_release_audit.py
+```
+
+The Python reconciliation recomputes the financial workbook; the current check matches 64 of 64 cells. CI runs formatting, type checks, tests, coverage and portfolio consistency checks.
 
 ## Five-minute review
 
-1. `docs/portfolio/one_page_brief.md`: decision, numbers, what would change the answer
-2. `docs/portfolio/evidence_ledger.md`: claim traceability
-3. `model/MarginLadder_Monthly_FP&A_Model.xlsx`: Inputs, Monthly Plan, Tornado, Audit Checks
-4. `docs/finance/decision_bridge.md`, `docs/finance/model_audit.md` and `docs/finance/decision_layer_report.md`
-5. `docs/validation/ui_workflow_check.md`: browser workflow test, with what it does and does not prove
-6. Role lens (optional): `docs/portfolio/role_paths/`. The full earlier README is `docs/portfolio/README_extended.md`.
+1. [One-page brief](docs/portfolio/one_page_brief.md) — recommendation and decision logic
+2. [Evidence ledger](docs/portfolio/evidence_ledger.md) — what is built, derived, assumed or unverified
+3. `model/MarginLadder_Monthly_FP&A_Model.xlsx` — driver-based plan, tornado and audit checks
+4. [Decision bridge](docs/finance/decision_bridge.md) and [financial model audit](docs/finance/model_audit.md)
+5. [UI workflow check](docs/validation/ui_workflow_check.md) — browser workflow evidence and limits
 
-## Next step that would matter most
+## Recruiter role lenses
 
-Interview three to five real estimators, sales or finance staff, log them with
-`data/templates/discovery_interview_log_template.csv`, and re-run the model on observed stage times.
-See `docs/portfolio/validation_plan.md`.
+| Role | Walkthrough |
+|---|---|
+| Product Finance Analyst | [Investment economics, cash and payback](docs/portfolio/role_paths/product_finance_analyst.md) |
+| Finance Analyst | [FP&A, variance and reconciliation](docs/portfolio/role_paths/finance_analyst.md) |
+| Business Analyst | [Process, requirements and UAT](docs/portfolio/role_paths/business_analyst.md) |
+| Associate Product Manager | [Problem framing, MVP and metrics](docs/portfolio/role_paths/apm.md) |
+| Consulting Analyst | [Options, recommendation and market sizing](docs/portfolio/role_paths/consulting_analyst.md) |
+| Project / Programme Manager | [Delivery, governance and critical path](docs/portfolio/role_paths/project_manager.md) |
+
+## Reality check and next step
+
+The case assumptions were range-checked against Bharat Forge’s FY26 audited public filing; see [the benchmark note](docs/finance/real_company_benchmark.md). It is one much larger company and one year—use it as a range check, not proof.
+
+The highest-value next step would be interviews with three to five estimators, sales or finance staff, followed by measured stage-time logging using `data/templates/discovery_interview_log_template.csv`. See [the validation plan](docs/portfolio/validation_plan.md).
