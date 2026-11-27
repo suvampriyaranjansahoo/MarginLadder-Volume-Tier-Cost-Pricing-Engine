@@ -16,17 +16,17 @@ uvicorn application.server:app --reload
 
 Open `http://127.0.0.1:8000`.
 
-The first service-backed API request lazily creates a local SQLite database at `application/data/marginladder.db` and inserts four fictional demo RFQs and demo users if the database is empty. Importing the ASGI module or calling the public health endpoint does not create files. Sign-in details are written to `application/data/demo_credentials.txt` (gitignored, never commit it). An older v2 database upgrades in place. To reset the demo, stop the server and delete that database file. To use another location, set `MARGINLADDER_DB` before starting the server.
+The first service-backed API request lazily creates a local SQLite database at `application/data/marginladder.db` and inserts fictional demo RFQs if the database is empty. Importing the ASGI module or calling the public health endpoint does not create files. The workspace has no sign-in: use the **Demo role** selector to view role-specific paths. It is a presentation control, not an identity or security boundary. An older v2 database upgrades in place. To reset the demo, stop the server and delete that database file. To use another location, set `MARGINLADDER_DB` before starting the server.
 
 ## Demonstration path
 
-0. Sign in with a demo account from `application/data/demo_credentials.txt`. Your role comes from the account.
+0. Choose a **Demo role** in the header. It changes the role-specific presentation path without requiring credentials.
 1. Open a `New` RFQ and select **Start costing** as an estimator.
 2. Select **Calculate 3 volume prices**, edit the gross weight, net weight and cycle time for each part line, add up to 50 lines, set the common target margin and run costing.
-3. Sign out and sign in as **Sales Head** or **Deputy** to approve / send back a quote above ₹25 lakh annual value.
-4. Sign in as an estimator again and mark the approved quote as sent.
+3. Switch to **Sales Head** or **Deputy** to approve / send back a quote above ₹25 lakh annual value.
+4. Switch to **Estimator** again and mark the approved quote as sent.
 5. Review the quote version snapshot and activity trail. Use **Print / Save quotation PDF** to open the print-friendly quote and save it through the browser.
-6. Sign in as **Plant Head** on an RFQ in routing review to demonstrate the routing gate.
+6. Switch to **Plant Head** on an RFQ in routing review to demonstrate the routing gate.
 
 The costing screen reuses `engine/cost_engine.py`; it does not duplicate formulas in JavaScript.
 
@@ -46,7 +46,7 @@ The costing screen reuses `engine/cost_engine.py`; it does not duplicate formula
 
 ## Scope and limitations
 
-This is a local portfolio MVP. It has a login and server-side roles but no SSO, MFA, password reset, tenancy, file upload, real AI extraction, ERP link, email or monitoring. Do not expose it publicly or put real customer data in it. The seeded RFQs and costing inputs are fictional.
+This is a sign-in-free local portfolio MVP. Demo roles are UI/API presentation controls, not access controls; do not expose it publicly or put real customer data in it. It has no production identity, tenancy, file upload, real AI extraction, ERP link, email or monitoring. The seeded RFQs and costing inputs are fictional.
 
 ## Regression checks
 

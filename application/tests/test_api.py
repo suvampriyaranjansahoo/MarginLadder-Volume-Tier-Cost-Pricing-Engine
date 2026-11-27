@@ -20,9 +20,8 @@ def client(tmp_path, monkeypatch):
 
 
 def sign_in(client, username):
-    r = client.post("/api/login", json={"username": username, "password": PW})
-    assert r.status_code == 200, r.text
-    return {"Authorization": f"Bearer {r.json()['token']}"}
+    assert username in {"estimator", "estimation_head", "plant_head", "sales_head", "deputy"}
+    return {"X-Demo-Role": username}
 
 
 def new_rfq(client, h, **o):
@@ -32,32 +31,23 @@ def new_rfq(client, h, **o):
     return client.post("/api/rfqs", json=body, headers=h)
 
 
-def test_health_is_public_and_everything_else_needs_a_session(client):
+def test_health_and_workspace_api_are_available_without_sign_in(client):
     assert client.get("/api/health").json()["status"] == "ok"
     for path in ("/api/rfqs", "/api/dashboard", "/api/audit", "/api/kpis", "/api/finance-case",
                  "/api/analysis", "/api/sector-benchmark", "/api/trace/summary", "/api/me"):
-        assert client.get(path).status_code == 401, path
-    assert client.get("/api/rfqs", headers={"Authorization": "Bearer nonsense"}).status_code == 401
+        assert client.get(path).status_code == 200, path
+    assert client.get("/api/me").json()["role"] == "estimator"
+    assert client.get("/api/me", headers={"X-Demo-Role": "sales_head"}).json()["role"] == "sales_head"
+    assert client.get("/api/me", headers={"X-Demo-Role": "not-a-role"}).status_code == 400
 
 
-def test_login_failure_lockout_and_logout(client):
-    assert client.post("/api/login", json={"username": "estimator", "password": "wrong-wrong"}).status_code == 401
-    h = sign_in(client, "estimator")
-    assert client.get("/api/me", headers=h).json()["role"] == "estimator"
-    client.post("/api/logout", headers=h)
-    assert client.get("/api/me", headers=h).status_code == 401
-    for _ in range(5):
-        client.post("/api/login", json={"username": "deputy", "password": "wrong-wrong"})
-    assert client.post("/api/login", json={"username": "deputy", "password": PW}).status_code == 429
-
-
-def test_role_comes_from_the_session_not_the_request_body(client):
+def test_role_comes_from_the_demo_header_not_the_request_body(client):
     h = sign_in(client, "estimator")
     rfq = new_rfq(client, h).json()
     client.patch(f"/api/rfqs/{rfq['id']}", json={"status": "costing"}, headers=h)
     quote = client.post(f"/api/rfqs/{rfq['id']}/quote",
                         json={"quote_date": "2026-11-05", "selected_volume": 270000}, headers=h).json()
-    # The body claims sales_head. The session says estimator. The session wins.
+    # The body claims sales_head. The selected demo role is estimator and wins.
     forged = client.post(f"/api/quotes/{quote['id']}/decision",
                          json={"action": "approve", "role": "sales_head", "actor": "Boss"}, headers=h)
     assert forged.status_code == 403
@@ -129,12 +119,12 @@ def test_trace_import_only_for_the_estimation_head(client):
     assert bad.status_code == 400 and "Row 1" in bad.json()["detail"]
 
 
-def test_print_view_requires_sign_in_and_escapes_html(client):
+def test_print_view_uses_demo_role_and_escapes_html(client):
     h = sign_in(client, "estimator")
     rfq = new_rfq(client, h, customer="<script>alert(1)</script>").json()
     client.patch(f"/api/rfqs/{rfq['id']}", json={"status": "costing"}, headers=h)
     q = client.post(f"/api/rfqs/{rfq['id']}/quote", json={"quote_date": "2026-11-05", "selected_volume": 270000}, headers=h).json()
-    assert client.get(f"/api/quotes/{q['id']}/print").status_code == 401
+    assert client.get(f"/api/quotes/{q['id']}/print").status_code == 200
     page = client.get(f"/api/quotes/{q['id']}/print", headers=h)
     assert "Indicative Quotation" in page.text and "<script>alert(1)" not in page.text
 

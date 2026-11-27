@@ -6,7 +6,7 @@ This page maps portfolio evidence to the roles MarginLadder targets. It is not a
 
 ## Shared review path (all roles)
 
-1. Run the local application and sign in with a demo account.
+1. Run the local application; no account is required. Select a demo role in the header.
 2. Use the **Forging economics simulator** to change steel price, yield, cycle time, energy, utilisation and working-capital days.
 3. Review the **Bharat Forge FY26 public-data benchmark** and its stated limits.
 4. Inspect the RFQ workflow, quote snapshot and audit trail.

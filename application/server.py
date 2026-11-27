@@ -2,14 +2,13 @@
 
 Run from the repository root: uvicorn application.server:app --reload
 
-Every /api route except /api/health and /api/login needs "Authorization: Bearer <token>".
-The actor and role come from the session, never from the request body.
+This is a sign-in-free local portfolio demo. Visitors select a demo role in the
+browser; it is used only to reveal the role-specific demonstration paths and is
+not an identity or security control.
 """
 from __future__ import annotations
 
 import html
-import os
-import stat
 from threading import Lock
 from pathlib import Path
 from typing import Any, NoReturn
@@ -27,30 +26,17 @@ from application.service import (
     AccessDeniedError,
     MarginLadderService,
     NotFoundError,
+    ROLE_NAMES,
     ServiceError,
 )
 
 VERSION = "3.1.0"
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = Path(__file__).resolve().parent / "static"
-CREDENTIALS_FILE = Path(__file__).resolve().parent / "data" / "demo_credentials.txt"
 # Constructed lazily so importing the ASGI module is side-effect free. This matters for
 # test collection, static analysis, CLI tooling and worker processes.
 service: MarginLadderService | None = None
 _service_lock = Lock()
-
-
-def _write_demo_credentials(svc: MarginLadderService) -> None:
-    """On first run, create one account per role and save random passwords locally."""
-    creds = svc.seed_demo_users()
-    if not creds:
-        return
-    CREDENTIALS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    CREDENTIALS_FILE.write_text(
-        "MarginLadder demo accounts (local only, random passwords, not committed).\n"
-        + "\n".join(f"{role}: {password}" for role, password in creds.items()) + "\n", encoding="utf-8")
-    os.chmod(CREDENTIALS_FILE, stat.S_IRUSR | stat.S_IWUSR)
-    print(f"Demo accounts created. Passwords are in {CREDENTIALS_FILE}")
 
 
 def get_service() -> MarginLadderService:
@@ -64,7 +50,6 @@ def get_service() -> MarginLadderService:
         if current is None:
             current = MarginLadderService(seed_demo=True)
             service = current
-            _write_demo_credentials(current)
     return current
 
 
@@ -86,11 +71,6 @@ async def security_headers(request, call_next):
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     response.headers.setdefault("Cache-Control", "no-store")
     return response
-
-
-class LoginRequest(BaseModel):
-    username: str = Field(min_length=1, max_length=40)
-    password: str = Field(min_length=1, max_length=200)
 
 
 class CreateRFQRequest(BaseModel):
@@ -162,17 +142,12 @@ def _raise_http(exc: Exception) -> NoReturn:
     raise exc
 
 
-def _bearer(authorization: str | None) -> str | None:
-    if authorization and authorization.lower().startswith("bearer "):
-        return authorization[7:].strip() or None
-    return None
-
-
-def current_user(authorization: str | None = Header(default=None)) -> dict[str, Any]:
-    user = get_service().user_for_token(_bearer(authorization))
-    if user is None:
-        raise HTTPException(status_code=401, detail="Sign in to continue", headers={"WWW-Authenticate": "Bearer"})
-    return user
+def current_user(x_demo_role: str | None = Header(default=None)) -> dict[str, Any]:
+    """Return a selected demo role; this local build intentionally has no authentication."""
+    role = (x_demo_role or "estimator").strip().lower()
+    if role not in ROLE_NAMES:
+        raise HTTPException(status_code=400, detail="Choose a valid demo role")
+    return {"username": f"demo_{role}", "display_name": role.replace("_", " ").title(), "role": role}
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -183,21 +158,6 @@ def home() -> str:
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "application": "MarginLadder", "version": VERSION}
-
-
-@app.post("/api/login")
-def login(request: LoginRequest) -> dict[str, Any]:
-    try:
-        return get_service().authenticate(request.username, request.password)
-    except ServiceError as exc:
-        status = 429 if "Too many" in str(exc) else 401
-        raise HTTPException(status_code=status, detail=str(exc)) from exc
-
-
-@app.post("/api/logout")
-def logout(authorization: str | None = Header(default=None)) -> dict[str, str]:
-    get_service().logout(_bearer(authorization))
-    return {"status": "signed out"}
 
 
 @app.get("/api/me")
