@@ -1,0 +1,11 @@
+id,priority,area,summary,status,recommended_stage
+FIN-001,P1,Finance,Replace revenue-days working-capital proxy,Open,2
+FIN-002,P1,Finance,Make incremental economics counterfactual explicit,Open,2
+COST-001,P1,Costing,Add traceable rework and related costing lines,Open,3
+INT-001,P1,Integration,Reconcile Python Excel SQL application dashboard definitions,Open,10
+APP-001,P1,Application,Canonical lifecycle event taxonomy and dashboard reconciliation,Open,7-8
+FPA-001,P2,FP&A,Driver based forecast and variance bridges,Open,4
+DATA-001,P2,Data governance,Prevent illustrative data being represented as actuals,Open,All
+DOC-001,P2,Documentation,Canonical V4 entry points and consolidated role packs,Open,11
+QA-001,P2,Quality,Ensure declared validation dependencies are available,Resolved,1
+QA-002,P3,Quality,Resolve lint and typing release-gate findings,Open,12

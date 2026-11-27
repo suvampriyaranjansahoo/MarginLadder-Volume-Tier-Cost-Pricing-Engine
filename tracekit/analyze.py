@@ -129,8 +129,8 @@ def parse_row(raw: dict[str, str]) -> TraceRow:
         if start is not None:
             intervals.append((start, end, label))
     intervals.sort(key=lambda item: item[0])
-    for previous, current in zip(intervals, intervals[1:]):
-        if current[0] < previous[1]:
+    for previous, current in zip(intervals, intervals[1:], strict=False):
+        if previous[1] is not None and current[0] < previous[1]:
             raise TraceError(f"{ref}: overlapping {previous[2]} and {current[2]} intervals")
 
     try:

@@ -10,6 +10,7 @@ import csv
 import re
 import sqlite3
 import sys
+from typing import Any
 from pathlib import Path
 
 from tracekit.analyze import parse_row, read_csv as read_trace_csv, stage_days, stage_observations
@@ -63,6 +64,7 @@ def load(csv_path: Path) -> sqlite3.Connection:
             rfq TEXT, intake REAL, costing REAL, routing REAL, approval REAL,
             send REAL, total REAL, customer_hold REAL NOT NULL DEFAULT 0
         )""")
+        rows: list[tuple[Any, ...]]
         with csv_path.open(newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             fieldnames = set(reader.fieldnames or ())
@@ -115,6 +117,8 @@ def readings(res: dict[str, tuple[list[str], list[tuple]]], n: int) -> dict[str,
     within = next((r for r in res["aging_buckets"][1] if r[0].startswith("1.")), None)
     breach, _, share = res["costing_over_40pct"][1][0]
     wi = res["what_if"][1]
+    hold_cols, hold_rows = res["customer_hold_overlay"]
+    hold = dict(zip(hold_cols, hold_rows[0], strict=True))  # by column name: positional indexes drifted before
     return {
         "percentiles": f"Median {pcts['median']} days and 90th percentile {pcts['p90']} days, against a 4-day target. Report both: the average hides the long tail.",
         "stage_share": f"{top[0]} is the largest block at {top[2]}% of elapsed time. Timestamp-derived costing is {pct['Costing']}%; the brief-only hands-on arithmetic is about 17.3% of a 9-day cycle (1.56 of 9 days), so compare only after checking trace completeness and definitions.",
@@ -128,8 +132,8 @@ def readings(res: dict[str, tuple[list[str], list[tuple]]], n: int) -> dict[str,
                     + ("Faster costing alone does not reach the target; the waiting stages have to shrink too. " if wi[1][4] < 50 else "")
                     + "I chose the caps, so this shows what has to be true for the target to be met, not that it will be."),
         "customer_hold_overlay": (
-            f"Customer hold averages {res['customer_hold_overlay'][1][0][1]} days per completed RFQ "
-            f"and is present on {res['customer_hold_overlay'][1][0][2]} of {n}. It is a non-additive overlay; "
+            f"Customer hold averages {hold['mean_customer_hold_days']} days per completed RFQ "
+            f"and is present on {hold['rfqs_with_customer_hold']} of {hold['completed_rfqs']}. It is a non-additive overlay; "
             "do not add it to the stage stack because it may overlap residual elapsed time."
         ),
     }
@@ -145,7 +149,6 @@ def main(argv: list[str]) -> int:
     finally:
         con.close()
     simulated = csv_path.resolve() == DEFAULT_CSV.resolve()
-    is_template = csv_path.name == "rfq_trace_template.csv"
     titles = {"percentiles": "Median and 90th percentile", "stage_share": "Where the days go",
               "largest_stage_per_rfq": "Longest stage per RFQ", "variance_drivers": "What drives the spread",
               "aging_buckets": "Ageing buckets", "costing_over_40pct": "The 40% costing rule",

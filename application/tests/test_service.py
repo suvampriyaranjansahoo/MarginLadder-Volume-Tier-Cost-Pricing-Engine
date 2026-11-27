@@ -237,3 +237,46 @@ def test_overdue_rfq_can_be_reassigned_with_its_unchanged_due_date(svc):
     with pytest.raises(ServiceError, match="Due date cannot be in the past"):
         svc.update_rfq(rfq["id"], {"due_date": other_past}, "Aditi", "estimator")
 
+
+
+def test_quote_tier_prices_come_from_tier_rates(svc):
+    """The workflow must price tiers on TIER_RATES (79/78/77 on the v17 date), not one rate for all tiers."""
+    rfq = make_rfq(svc)
+    svc.update_rfq(rfq["id"], {"status": "costing"}, "Aditi", "estimator")
+    quote = svc.create_quote(rfq["id"], {"quote_date": "2026-11-05"}, "Aditi", "estimator")
+    tiers = quote["snapshot"]["tiers"]
+    assert [t["annual_volume_per_part"] for t in tiers] == [90000, 180000, 270000]
+    assert [str(t["total_unit_price"]) for t in tiers] == ["117.33", "116.51", "115.77"]
+    assert [t["lines"][0]["result"]["snapshot"]["rates"][0][5] for t in tiers] == ["v17+1", "v17", "v17-1"]
+    again = svc.get_quote(quote["id"])["snapshot"]["tiers"]
+    assert [str(t["total_unit_price"]) for t in again] == ["117.33", "116.51", "115.77"]
+
+
+def test_multi_part_quote_sums_each_tier_price(svc):
+    rfq = make_rfq(svc)
+    svc.update_rfq(rfq["id"], {"status": "costing"}, "Aditi", "estimator")
+    quote = svc.create_quote(rfq["id"], {"quote_date": "2026-11-05", "parts": [{"description": "A"}, {"description": "B"}]}, "Aditi", "estimator")
+    assert [str(t["total_unit_price"]) for t in quote["snapshot"]["tiers"]] == ["234.66", "233.02", "231.54"]
+
+
+def _costing_rfq(svc):
+    rfq = make_rfq(svc)
+    svc.update_rfq(rfq["id"], {"status": "costing"}, "Aditi", "estimator")
+    return rfq
+
+
+@pytest.mark.parametrize(("key", "value"), [("net", "-1"), ("net", "0"), ("gross", "0")])
+def test_quote_rejects_non_positive_weights(svc, key, value):
+    """Regression: the retained v1 engine accepted these, e.g. net = -1 priced at about half the normal price."""
+    rfq = _costing_rfq(svc)
+    with pytest.raises(ServiceError, match="Part line 1"):
+        svc.create_quote(rfq["id"], {"quote_date": "2026-11-05", "parts": [{"description": "x", key: value}]}, "Aditi", "estimator")
+    assert svc.list_quotes(rfq["id"]) == []
+
+
+def test_quote_uses_the_gst_rate_that_was_sent(svc):
+    """Regression: gst was filtered out of the part inputs, so every quote was priced at the 18% default."""
+    rfq = _costing_rfq(svc)
+    quote = svc.create_quote(rfq["id"], {"quote_date": "2026-11-05", "parts": [{"description": "x", "gst": "0.05"}]}, "Aditi", "estimator")
+    result = quote["snapshot"]["tiers"][1]["lines"][0]["result"]
+    assert Decimal(result["gst"]) == (Decimal(result["price"]) * Decimal("0.05")).quantize(Decimal("0.01"))

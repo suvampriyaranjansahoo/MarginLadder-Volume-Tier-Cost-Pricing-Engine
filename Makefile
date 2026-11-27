@@ -10,6 +10,8 @@ reconcile:
 	python -B -m finance.monthly_plan
 	python -B -m finance.variance
 	python -B -m analytics.product_metrics
+	python -B -m realdata.benchmark
+	python -B scripts/make_decision_layer_report.py
 check: lint test reconcile
 	python -B scripts/check_consistency.py
 	python -B scripts/portfolio_release_audit.py

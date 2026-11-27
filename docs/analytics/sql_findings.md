@@ -85,4 +85,4 @@ For a raw Week-1 trace, pass the timestamp CSV directly; unsent RFQs are exclude
 |---|---|---|---|
 | 0.0 | 0 | 60 | 0.0 |
 
-**Reading.** Customer hold averages 0 days per completed RFQ and is present on 60 of 60. It is a non-additive overlay; do not add it to the stage stack because it may overlap residual elapsed time.
+**Reading.** Customer hold averages 0.0 days per completed RFQ and is present on 0 of 60. It is a non-additive overlay; do not add it to the stage stack because it may overlap residual elapsed time.

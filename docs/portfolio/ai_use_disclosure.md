@@ -9,6 +9,7 @@ AI assistance is explicitly permitted in this portfolio, but outputs are not tre
 | Market research | Search-query expansion, source discovery, synthesis drafts | Open primary sources, confirm publication dates and figures, record URLs, reject unsupported extrapolation |
 | Finance model | Formula review, model architecture suggestions, commentary drafting | Deterministic Decimal calculation, workbook formula checks, independent arithmetic and assumption review |
 | Engineering | Code scaffolding, test ideas, documentation, refactoring review | Execute tests, inspect changed code, review access control, reproduce the commands locally |
+| Public data | Web search to locate the audited filing and cross-check press figures; code to recompute ratios | Open the NSE filing, tick-check the headline figures by hand, treat undated marketplace prices as a rough range only, refresh the dated share price before quoting multiples |
 | Business analysis | Requirement and acceptance-criteria drafting, traceability quality review | Validate workflow with actual participants; do not present generated personas or quotes as interviews |
 | Product | PRD and experiment protocol drafting, event taxonomy critique | Real user discovery and task testing before claiming validation or adoption |
 | Consulting | Storyline, issue-tree and slide critique | Reconcile every number, review source quality, challenge options and explain assumptions orally |

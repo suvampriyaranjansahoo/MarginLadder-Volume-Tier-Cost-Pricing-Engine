@@ -30,6 +30,9 @@
 | Product analytics represent real users | `data/product_events_sample.csv` | Synthetic | Read; not real usage |
 | Monthly actual-vs-budget sample is real company data | `data/finance_actual_vs_budget_sample.csv` | Synthetic | Read; not actuals |
 | UAT scripts exist | `docs/ba/uat_scripts.md` | Built | Read; no completed UAT |
+| Bharat Forge FY26 consolidated figures (revenue ₹16,811.7 cr, PBT ₹1,676.6 cr, total assets ₹22,260 cr) | `realdata/bharat_forge_fy26.py`; NSE integrated filing, audited, 7 May 2026 | Sourced | Run: P&L chain, balance sheet and segment totals reconcile; recomputed debt/equity 0.72 equals the company's reported ratio. The candidate should still open the filing and tick-check these figures by hand |
+| Case assumptions are within or outside real ranges (margin, material share, working-capital days, steel rate) | `docs/finance/real_company_benchmark.md` | Derived from Sourced data | One large company, one year; not a peer set. Marketplace steel listings are undated and unverified |
+| Share price used for the valuation lines | `realdata/bharat_forge_fy26.py` | Dated-market | ₹1,991 is the BSE close on 7 May 2026, not a current price; refresh before quoting multiples |
 | Interviews, task sessions, expert calls occurred | No completed log | Unverified | Not trusted |
 | Customer signed off or accepted product | No signed UAT | Unverified | Not trusted |
 | Production deployment or live link exists | No verified URL / deployment record | Unverified | Not trusted |

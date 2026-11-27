@@ -20,7 +20,7 @@
     "docs/go_no_go_memo.md": "Aligned decision to measurement-led reversible pilot; broad rollout conditional on evidence gates.",
     "docs/one_page_memo.pdf": "Replaced contradictory memo with consistent one-page conditional pilot recommendation.",
     "docs/consulting/MarginLadder_Executive_Recommendation.pptx": "Aligned conditional-simulation wording with evidence boundary.",
-    "model/MarginLadder_Monthly_FP&A_Model.xlsx": "Linked effective win-back in monthly plan to adoption \u00d7 incremental lift base scenario; added assumption comments and auto-recalc.",
+    "model/MarginLadder_Monthly_FP&A_Model.xlsx": "Linked effective win-back in monthly plan to adoption × incremental lift base scenario; added assumption comments and auto-recalc.",
     "docs/ba/user_stories.md": "Corrected traceability link to canonical v3 file.",
     "docs/CANONICAL_DOCUMENTS.md": "Removed unsupported archive-location claim.",
     "pyproject.toml": "Bumped portfolio package version to 3.3.0 for the audited correction release; application API remains 3.1.0.",
@@ -67,9 +67,6 @@
     "docs/product/PRD_v2.md": "7df4e329ae7a6d9b92cf52aba2ad34585a5a5318370cf329999b2c8ca64ff8ea",
     "docs/product/experiment_plan.md": "3447d18fba311feffd13e2dde1a75c1e287963d65b7fd50d4b4d23f5b57b2a89",
     "docs/product/prioritisation_matrix.md": "b8fa541ddef1aa82b646577e527f1628d67499c299240f8e0d61c0173f9e1eab",
-    "docs/requirements_traceability.md": "8ca7366d05b3be8b7c12a7cf1983190fa1aa3d4b6fa9f0490110688e90527e33",
-    "docs/requirements_traceability_v2.md": "f2a7d4d9e54220dbf5919c80fb7b28a86c2687d2015511d44b810560cfc4a487",
-    "docs/upgrade_regression_report.md": "19c2babbabe10315ecb08699a40ed8ece367201fa10f76ebef32cfd5b76e4205",
     "docs/user_research_script.md": "ea1f3ea0ad5fa6003125b8e8d912f27822ba10401e13f996afff9507abe67315",
     "docs/validation/evidence_register.md": "1d18e67827761e4b61783942607c841ab525b38ee13a614c9536fe7952c2046d",
     "engine/cost_engine.py": "cea4f529809fb3b57cd6bfd31c9c70ed14bafda2b55bdd0fcb1ee79d6d040855",
@@ -83,6 +80,9 @@
     "prototype/business_dashboard.html": "21fe29a8a5184c6ed98a08f48f7a890e7f8d92f44eb4f239eeef7ea313a20451",
     "prototype/costing_demo.html": "af34551e23acab4dff6850832edbde3493cdb04024b69dd7b6d5bcb144e9e656",
     "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
-    "requirements.txt": "d04a0bdde346d5fd903b8142d6ae0171bf50d610fdb5a878a8be31cca46f70cc"
+    "requirements.txt": "d04a0bdde346d5fd903b8142d6ae0171bf50d610fdb5a878a8be31cca46f70cc",
+    "docs/archive/requirements_traceability.md": "8ca7366d05b3be8b7c12a7cf1983190fa1aa3d4b6fa9f0490110688e90527e33",
+    "docs/archive/requirements_traceability_v2.md": "f2a7d4d9e54220dbf5919c80fb7b28a86c2687d2015511d44b810560cfc4a487",
+    "docs/archive/upgrade_regression_report.md": "19c2babbabe10315ecb08699a40ed8ece367201fa10f76ebef32cfd5b76e4205"
   }
 }

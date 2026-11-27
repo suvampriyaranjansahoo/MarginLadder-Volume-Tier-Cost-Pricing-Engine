@@ -110,3 +110,47 @@ def test_failed_trace_load_closes_its_sqlite_connection(tmp_path, monkeypatch):
     assert len(opened) == 1
     with pytest.raises(sqlite3.ProgrammingError, match="closed database"):
         opened[0].execute("SELECT 1")
+
+
+# ---- regression: customer-hold narrative read the wrong result columns (positions 1 and 2 instead of 0 and 1) ----
+def _readings_for(tmp_path, holds):
+    """Copy the simulated log, set 'Customer hold days' on the first rows, and return the readings text."""
+    with rq.DEFAULT_CSV.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    for i, row in enumerate(rows):
+        row["Customer hold days"] = str(holds[i]) if i < len(holds) else "0"
+    path = tmp_path / "with_holds.csv"
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    con = rq.load(path)
+    try:
+        res = rq.run(con)
+        n = con.execute("SELECT COUNT(*) FROM cycle").fetchone()[0]
+        return rq.readings(res, n)["customer_hold_overlay"], res, n
+    finally:
+        con.close()
+
+
+def test_customer_hold_narrative_with_no_holds_says_zero_of_n(tmp_path):
+    text, _, n = _readings_for(tmp_path, [])
+    assert n == 60
+    assert "averages 0.0 days" in text
+    assert "present on 0 of 60" in text  # the bug printed "present on 60 of 60"
+
+
+def test_customer_hold_narrative_uses_mean_and_count_not_neighbouring_columns(tmp_path):
+    text, res, n = _readings_for(tmp_path, [2, 1])  # two RFQs on hold, total 3 days over 60 RFQs
+    assert "averages 0.05 days" in text
+    assert "present on 2 of 60" in text
+    cols, rows = res["customer_hold_overlay"]
+    assert dict(zip(cols, rows[0], strict=True))["rfqs_with_customer_hold"] == 2
+    assert n == 60
+
+
+def test_customer_hold_narrative_matches_the_sql_table_for_any_input(tmp_path):
+    text, res, _ = _readings_for(tmp_path, [0.5, 0, 4, 0, 0, 1.5])
+    row = dict(zip(*res["customer_hold_overlay"][:1], res["customer_hold_overlay"][1][0], strict=True))
+    assert f"averages {row['mean_customer_hold_days']} days" in text
+    assert f"present on {row['rfqs_with_customer_hold']} of {row['completed_rfqs']}" in text

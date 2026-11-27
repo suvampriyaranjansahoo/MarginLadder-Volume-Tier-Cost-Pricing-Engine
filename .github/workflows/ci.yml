@@ -15,9 +15,11 @@ jobs:
       - run: ruff check --no-cache .
       - run: mypy --cache-dir /tmp/marginladder-mypy-cache
       - run: python -B engine/cost_engine.py
-      - run: PYTHONDONTWRITEBYTECODE=1 pytest -p no:cacheprovider --cov=application --cov=finance --cov=tracekit --cov=analytics --cov-report=term-missing --cov-fail-under=85
+      - run: PYTHONDONTWRITEBYTECODE=1 pytest -p no:cacheprovider --cov=application --cov=finance --cov=tracekit --cov=analytics --cov=realdata --cov-report=term-missing --cov-fail-under=85
       - run: python -B -m finance.reconcile
       - run: python -B -m finance.variance
       - run: python -B -m analytics.product_metrics
+      - run: python -B -m realdata.benchmark
+      - run: python -B scripts/make_decision_layer_report.py
       - run: python -B scripts/check_consistency.py
       - run: python -B scripts/portfolio_release_audit.py

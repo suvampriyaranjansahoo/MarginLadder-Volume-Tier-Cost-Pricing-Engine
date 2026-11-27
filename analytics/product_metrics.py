@@ -71,7 +71,7 @@ def analyse(events: list[dict]) -> dict:
         if created is None:
             raise ProductEventError(f"RFQ {ref}: funnel events exist without rfq_created")
         ordered = [(name, milestones[name]) for name in FUNNEL if name in milestones]
-        if any(right[1] < left[1] for left, right in zip(ordered, ordered[1:])):
+        if any(right[1] < left[1] for left, right in zip(ordered, ordered[1:], strict=False)):
             raise ProductEventError(f"RFQ {ref}: lifecycle events are out of order")
         week = created.strftime("%G-W%V")
         cohort_counts[week].add(ref)

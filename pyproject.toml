@@ -5,13 +5,13 @@ description = "RFQ-to-quote costing case study and local working MVP"
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
-testpaths = ["application/tests", "finance", "tracekit", "analytics"]
+testpaths = ["application/tests", "engine", "finance", "tracekit", "analytics", "realdata"]
 addopts = "-q"
 
 [tool.ruff]
 line-length = 140
 target-version = "py311"
-extend-exclude = ["prototype", "docs", "model", "engine", "data"]  # engine and data are the retained v1 files, byte-identical
+extend-exclude = ["prototype", "docs", "model", "engine/cost_engine.py", "data"]  # cost_engine.py and data are the retained v1 files, byte-identical
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "UP", "S"]
@@ -26,9 +26,11 @@ ignore = ["S101", "S608", "E501", "UP037", "B008"]   # asserts in tests; SQL her
 python_version = "3.12"
 ignore_missing_imports = true
 check_untyped_defs = true
-files = ["application", "finance", "tracekit", "analytics", "scripts"]
+explicit_package_bases = true
+mypy_path = "."
+files = ["application", "engine", "finance", "tracekit", "analytics", "realdata", "scripts"]
 exclude = "/tests/"
 
 [[tool.mypy.overrides]]
-module = ["engine.*"]
+module = ["engine.cost_engine"]
 ignore_errors = true   # retained v1 file, byte-identical

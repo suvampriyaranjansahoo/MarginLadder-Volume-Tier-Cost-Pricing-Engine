@@ -2,7 +2,7 @@
 
 **DEVELOPER-RUN, NOT USER RESEARCH.** `python3 scripts/developer_task_run.py` runs three tasks against the application service layer with a temporary database and synthetic records, and writes this file. No person took part. It shows how the system behaves on good and bad input. It does not show that anyone finds the screens clear.
 
-Run date: 2026-11-26. Reproduce it by running the script; dates inside the run are relative to the day it is run.
+Run date: 2026-11-27. Reproduce it by running the script; dates inside the run are relative to the day it is run.
 
 | Task | Step | Result |
 |---|---|---|

@@ -13,7 +13,9 @@ def test_base_case_reconciles_to_existing_case_arithmetic() -> None:
     assert result["annual_recovered_contribution"] == D("2160000.00")
     assert result["annual_net_contribution_after_run_cost"] == D("1960000.00")
     assert result["operating_payback_months"] == D("4.90")
-    assert result["break_even_win_back_rate"].quantize(D("0.0001")) == D("0.1157")
+    rate = result["break_even_win_back_rate"]
+    assert isinstance(rate, D)
+    assert rate.quantize(D("0.0001")) == D("0.1157")
 
 
 def test_monthly_rows_sum_to_annual_outputs_and_setup_is_one_off() -> None:

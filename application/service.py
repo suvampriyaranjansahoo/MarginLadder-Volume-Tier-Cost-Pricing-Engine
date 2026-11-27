@@ -21,6 +21,8 @@ from typing import Any
 from application import auth
 from tracekit import analyze as trace_analyze
 from engine.cost_engine import CostError, MASTER, SAMPLE, TIER_VOLUMES, cost_part, needs_sales_head
+from engine.input_guard import validate_part_inputs
+from engine.tier_pricing import tier_master
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = Path(os.getenv("MARGINLADDER_DB", Path(__file__).resolve().parent / "data" / "marginladder.db"))
@@ -145,6 +147,10 @@ class AccessDeniedError(ServiceError):
 
 
 _DUMMY_HASH = auth.hash_password("not-a-real-password")
+
+
+# SAMPLE has no gst, so the old filter silently dropped a supplied gst rate and priced every quote at 18%.
+ACCEPTED_PART_KEYS = frozenset(SAMPLE) | {"gst"}
 
 
 def utc_now() -> str:
@@ -426,13 +432,17 @@ class MarginLadderService:
         for index, part in enumerate(parts, start=1):
             if not isinstance(part, dict):
                 raise ServiceError(f"Part line {index} must be an object")
-            inputs = {**SAMPLE, **{k: v for k, v in part.items() if k in SAMPLE}}
+            inputs = {**SAMPLE, **{k: v for k, v in part.items() if k in ACCEPTED_PART_KEYS}}
             description = str(part.get("description") or f"Part {index}").strip()
             if not description:
                 raise ServiceError(f"Part line {index} needs a description")
+            try:
+                validate_part_inputs(inputs)
+            except CostError as exc:
+                raise ServiceError(f"Part line {index}: {exc}") from exc
             for volume in TIER_VOLUMES:
                 try:
-                    result = cost_part(inputs, MASTER, quote_date, volume)
+                    result = cost_part(inputs, tier_master(MASTER, str(inputs["mat_code"]), quote_date, volume), quote_date, volume)
                 except CostError as exc:
                     raise ServiceError(f"Part line {index}: {exc}") from exc
                 except (DecimalException, TypeError) as exc:

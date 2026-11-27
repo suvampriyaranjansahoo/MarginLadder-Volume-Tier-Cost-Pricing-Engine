@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import pytest
 
@@ -7,7 +7,7 @@ from analytics.product_metrics import ProductEventError, analyse, load_events
 
 def event(event_id, user, ref, name, stamp):
     return {"event_id": event_id, "user_id": user, "rfq_ref": ref, "event_name": name,
-            "event_at": datetime.fromisoformat(stamp).astimezone(timezone.utc)}
+            "event_at": datetime.fromisoformat(stamp).astimezone(UTC)}
 
 
 def test_product_funnel_uses_distinct_rfqs_and_expected_dropoff():

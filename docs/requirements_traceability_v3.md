@@ -1,7 +1,7 @@
 # Requirements traceability v3
 
 Chain: **problem → requirement → story → rule → use case → code → automated test → UAT script → status**.
-Replaces `requirements_traceability_v2.md` (kept for history). Test names are checked by `scripts/check_consistency.py`.
+Replaces `docs/archive/requirements_traceability_v2.md` (kept for history). Test names are checked by `scripts/check_consistency.py`.
 
 | Req | Problem or goal (tag) | Story | Rules | Use case | Code | Automated test | UAT | Status |
 |---|---|---|---|---|---|---|---|---|

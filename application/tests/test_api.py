@@ -157,3 +157,18 @@ def test_update_rfq_rejects_past_due_date(client):
     assert "Due date cannot be in the past" in response.json()["detail"]
     unchanged = client.get(f"/api/rfqs/{created['id']}", headers=h).json()
     assert unchanged["due_date"] == created["due_date"]
+
+
+def test_quote_tier_prices_through_the_api(client):
+    """API-level price assertions: 90,000 / 180,000 / 270,000 units price at 117.33 / 116.51 / 115.77 (rate date 2026-11-05)."""
+    from decimal import Decimal
+
+    est = sign_in(client, "estimator")
+    rfq = new_rfq(client, est).json()
+    assert client.patch(f"/api/rfqs/{rfq['id']}", json={"status": "costing"}, headers=est).status_code == 200
+    created = client.post(f"/api/rfqs/{rfq['id']}/quote", json={"quote_date": "2026-11-05"}, headers=est)
+    assert created.status_code == 201
+    expected = {90000: Decimal("117.33"), 180000: Decimal("116.51"), 270000: Decimal("115.77")}
+    for body in (created.json(), client.get(f"/api/quotes/{created.json()['id']}", headers=est).json()):
+        tiers = body["snapshot"]["tiers"]
+        assert {t["annual_volume_per_part"]: Decimal(str(t["total_unit_price"])) for t in tiers} == expected

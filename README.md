@@ -1,119 +1,102 @@
-# MarginLadder — one RFQ-to-quote decision case, five role front doors
+# MarginLadder
+### Should a manufacturer fund RFQ-to-quote automation? A modelled investment case, with a working prototype.
 
-**Start with the row for your role in the table below.** Each path is a 5-minute route through the same case: finance is the numeric spine, and the other roles read it from their own angle.
+**Suvam Priyaranjan Sahoo** · [GitHub](https://github.com/suvampriyaranjansahoo) ·
+[LinkedIn](https://linkedin.com/in/suvam-priyaranjan-sahoo-18b7412bb) ·
+[Portfolio](https://suvampriyaranjansahooportfolio.vercel.app)
 
-**Decision question:** Should a hypothetical Pune auto-components manufacturer invest in an RFQ costing workflow, and what evidence would justify that investment?
+> **Scope, stated up front.** The case is **hypothetical** (a Pune auto-components maker). It has **no production users**,
+> **no real customer interviews**, no UAT sign-off and no realised savings. Rates and records are **synthetic**
+> or assumption-led. Every figure below is a modelled scenario, not a measured result.
 
-**Recommendation:** Do not approve a broad automation rollout on assumptions alone. First measure RFQ stage timestamps, rework, quote accuracy and loss reasons; pilot a reversible queue-visibility and approval workflow; expand costing automation only if observed evidence shows costing is a material bottleneck.
+## The decision
 
-> **Case boundary:** Hypothetical case study and local MVP. All case inputs and benefits are assumptions or derived calculations; sample operational/product records are synthetic. There are no production users and no real customer interviews; no customer adoption, signed UAT, production deployment or realised financial benefit is claimed.
+Quotation cycle time is 9 working days against a 4-day target. Is a ₹8 lakh build justified?
 
-## Five-minute recruiter route
-1. `docs/portfolio/one_minute_case_brief.md` — decision and recommendation.
-2. `docs/portfolio/evidence_ledger.md` — claim source and verification status.
-3. `docs/consulting/MarginLadder_Executive_Recommendation.pptx` — 16-slide case deck.
-4. `model/MarginLadder_Monthly_FP&A_Model.xlsx` — monthly model and visible audit checks.
-5. Your role's path in `docs/portfolio/role_paths/` (table below).
+**Recommendation: do not approve the full build yet.** Measure stage timestamps and rework first, pilot a reversible
+queue-visibility and approval workflow, and automate costing only if data shows costing is the bottleneck.
 
-## Demo (screenshots; hypothetical case, synthetic data)
-![Interactive business-case dashboard: change any input and every number updates](docs/dashboard_demo.gif)
+## Headline numbers (all derived from `numbers.json`, each tagged Brief / Assumption / Derived)
 
-*Dashboard: move the win-back slider and watch payback, break-even and cash change. Each input is tagged Brief, Assumption or Derived. The 97% "chance NPV is positive" comes from a simulation over my own assumed ranges, so it shows sensitivity and is not a forecast.*
-
-| Approval card | Costing screen |
-|---|---|
-| ![Approval card with the INR 25 lakh rule](docs/approval_card.png) | ![Costing screen with three volume prices](docs/costing_screen.png) |
-
-*Illustrative prototype screens. Rates, margins and prices are made up for the case. Nothing sets a price with AI.*
-
-**Try it yourself in 3 steps (about 2 minutes):**
-```bash
-pip install -r requirements.txt
-uvicorn application.server:app --reload      # then open http://127.0.0.1:8000
-python3 scripts/developer_task_run.py         # or: run 3 scripted workflow tasks, no browser needed
-```
-No live hosted link exists yet. When one does, it will be listed here and marked as a demo on synthetic data.
-
-## Financial answer at a glance
-
-The modelled lost-RFQ contribution pool is ₹86.4 lakh. Recovered margin is ₹21.6 / ₹10.8 lakh in the base / conservative cases. Operating payback is 4.9 months in the base case and 10.9 months in the conservative case; cash payback is 23.6 months. The three-year IRR is 75.8%, with a deepest cash need of ₹14.8 lakh; IRR without working-capital release is 43.0%.
-
-The model estimates 5,400 / 4,680 gross / net hours released and estimator load of 78% / 31%. The queue wait estimate is 0.57 day. Capacity break-even fit is 46%. Break-even win-back is 11.6% including run cost and 9.3% for fee only. These are scenario outputs, not observed outcomes.
-
-
-| Metric | Base case | Meaning |
+| Metric | Value | Type |
 |---|---:|---|
-| Annual RFQs | 720 | 60 per month × 12 |
-| Lost RFQs | 36 | 5% assumed loss rate |
-| Lost-RFQ contribution pool | ₹86.4 lakh | 36 × ₹20 lakh AOV × 12% margin |
-| Recovered contribution | ₹21.6 lakh | 25% assumed win-back; not realised |
-| Annual run cost | ₹2.0 lakh | Case assumption |
-| Net annual contribution after run cost | ₹19.6 lakh | Before tax and working capital |
-| Implementation fee | ₹8.0 lakh | Case assumption |
-| Operating payback | 4.9 months | Pre-tax and before working capital |
-| Cash payback | 23.6 months | Includes additional tax and working-capital assumptions |
+| Annual RFQs / lost at 5% | 720 / 36 | Brief, derived |
+| Lost-RFQ contribution pool (₹20 lakh AOV, 12% margin) | ₹86.4 lakh | Derived |
+| Recovered margin at 25% / 12.5% win-back | ₹21.6 / ₹10.8 lakh | Assumption |
+| Operating payback (base / conservative) | 4.9 months / 10.9 months | Derived, pre-tax |
+| Cash payback after tax and working capital | 23.6 months | Derived |
+| Deepest cash need | ₹14.8 lakh | Derived |
+| 3-year IRR (with / without working-capital release) | 75.8% / 43.0% | Derived |
+| Break-even win-back (incl. run cost / fee only) | 11.6% / 9.3% | Derived |
+| Estimator hours released (gross / net) | 5,400 / 4,680 | Derived, not cash |
+| Estimator load today / target | 78% / 31% | Derived |
+| Queue wait today | 0.57 day | Derived (queueing model) |
+| Capacity break-even fit | 46% | Derived |
 
-Do not conflate operating payback with cash payback. Released estimator capacity is not cash savings unless a cash-releasing action is evidenced.
+Read this carefully: the 4.9-month payback is operating and pre-tax. The cash view is 23.6 months. Released estimator
+hours are capacity, not savings. The ₹86.4 lakh is a ceiling, not a forecast.
 
-## Role paths — pick your door
-| Target role | Walkthrough | Evidence demonstrated |
+## What is built
+
+| Layer | Where | What it shows |
 |---|---|---|
-| Product Finance Analyst | `docs/portfolio/role_paths/product_finance_analyst.md`, `docs/finance/decision_grade_model.md` and `docs/finance/decision_bridge.md` | Adoption-adjusted economics, investment decision, cash and payback |
-| Finance Analyst | `docs/portfolio/role_paths/finance_analyst.md` | Driver model, FP&A, variance and reconciliation |
-| Business Analyst | `docs/portfolio/role_paths/business_analyst.md` | Process, requirements, traceability and UAT design |
-| Associate Product Manager | `docs/portfolio/role_paths/apm.md` | Problem framing, MVP scope, prioritisation and metrics |
-| Consulting Analyst | `docs/portfolio/role_paths/consulting_analyst.md` | Issue tree, options, recommendation, decision analysis, market sizing and gates |
-| Project / Programme Manager | `docs/portfolio/role_paths/project_manager.md` | Phased plan, decision gates, pilot design, risks and stakeholder cadence |
+| Financial model | `model/MarginLadder_Monthly_FP&A_Model.xlsx`, `finance/` | Driver-based monthly plan, about 490 formulas, tornado, audit checks |
+| Python twin | `finance/reconcile.py` | Recomputes the workbook; 64 of 64 cells match |
+| Decision layer | `finance/unit_economics.py`, `finance/scenarios.py` | Tier boundaries, cost-line shares, shock sensitivity, break-even volume, downside/base/upside, NPV threshold |
+| Costing engine | `engine/cost_engine.py` | Decimal arithmetic, dated rate master, quote snapshots, visible errors |
+| Workflow app | `application/` | FastAPI + SQLite, role-gated approvals, audit events, API and hardening tests |
+| Analytics | `analytics/`, `tracekit/` | SQL findings, product metrics, RICE sensitivity, sample-size tools |
+| Public-data check | `realdata/`, `docs/finance/real_company_benchmark.md` | Bharat Forge FY26 audited filing (NSE), recomputed ratios, DuPont, cash cycle, and the case's assumptions tested against them |
+| Extension | `model/MarginLadder_finance_extension.xlsx` | DCF, reverse DCF, DuPont, comparables, decision tree |
+| Documents | `docs/` | PRD, business rules, traceability, UAT scripts (not yet executed), RAID, deck |
 
-## Product and technical scope
-- Local FastAPI/SQLite RFQ workflow prototype with role checks, approvals and audit events; not hosted or ERP-integrated.
-- Decimal-based costing engine with rate master and quote snapshots.
-- Monthly driver-based FP&A workbook and Python calculation/reconciliation support.
-- Valuation and decision workbook (`model/MarginLadder_finance_extension.xlsx`): DuPont, DCF, reverse DCF and peers on a listed auto-component maker, win-back stress grid, decision tree and market sizing. Public-data modelling exercise, not investment advice. See `docs/finance/extension_summary.md`.
-- Synthetic analytics examples, PRD, requirements, UAT design and executive recommendation.
+## Run it
 
-## Run and verify
 ```bash
 pip install -r requirements-dev.txt
-pytest
-python3 -m finance.reconcile
-python3 -m finance.monthly_plan
-python3 scripts/check_consistency.py
-python3 scripts/portfolio_release_audit.py
-python3 scripts/check_role_packs.py
-python3 scripts/make_pm_artifacts.py   # rebuilds the Gantt and RACI from docs/pm/plan.csv
-uvicorn application.server:app --reload
+pytest                                   # tests live inside each package
+python -m finance.reconcile              # workbook vs Python, 64 cells
+python -m realdata.benchmark             # real-company benchmark from the audited filing
+python scripts/check_consistency.py      # figures in docs match numbers.json
+python scripts/portfolio_release_audit.py
+uvicorn application.server:app --reload  # local demo at http://127.0.0.1:8000
+python scripts/e2e_ui_check.py           # optional browser check of the full workflow (needs playwright)
 ```
 
-## Evidence taxonomy
-- **Case input:** stated in the hypothetical brief.
-- **Derived:** arithmetic from case inputs.
-- **Assumption:** estimate requiring validation.
-- **Synthetic:** generated records for method demonstration.
-- **Observed:** reserved for real participant/system evidence; none is claimed here.
+CI (`.github/workflows/ci.yml`) runs ruff, mypy, pytest with an 85% coverage gate and the checks above.
 
-Permitted claim: “Built a driver-based investment case and local RFQ workflow MVP; modelled contribution recovery under explicit scenarios.”
+## Reality check on public data
 
-Do not claim recovered revenue, cycle-time reduction, realised savings, product-market fit or customer deployment.
+The case is hypothetical, so I tested its assumptions against one real, audited filing: Bharat Forge (Pune), consolidated FY26,
+copied from the NSE filing (`realdata/bharat_forge_fy26.py`, source link inside). Recomputed debt/equity matches the company's own 0.72.
 
-## Documentation map
+| Case assumption | Case | Real reference | Reading |
+|---|---:|---:|---|
+| Quote margin | 12% | 17.4% EBITDA, 14.0% Forgings segment | Not aggressive |
+| Material share of price | 38.7% | 45.1% of revenue | Close |
+| Working capital days | 45 | 85 receivable days, 136-day cash cycle | **Light.** Re-run: IRR 75.8% falls to 44.4% and 28.4%; cash payback 1.96 to 2.33 and 2.54 years |
+| EN8 steel rate | ₹78/kg | ₹58 to 70/kg typical in undated seller listings | Above typical; steel up 25 to 36% year on year |
 
-Canonical source register: `docs/CANONICAL_DOCUMENTS.md`. Financial decision bridge: `docs/finance/decision_bridge.md`.
+One company, one year, a far larger business than the case's. Treat it as a range check, not proof. Details and limits:
+`docs/finance/real_company_benchmark.md`.
 
-Finance: `docs/finance/` · BA: `docs/ba/` · Product: `docs/product/` · Consulting: `docs/consulting/` · Portfolio: `docs/portfolio/` · Historical versions are identified by their versioned filenames; use the canonical register.
+## Evidence discipline
 
+`docs/portfolio/evidence_ledger.md` tags every claim as Brief, Assumption, Derived, Built, Synthetic or Unverified, and
+lists what is not claimed (adoption, deployment, realised benefit). `docs/portfolio/ai_use_disclosure.md` states where
+AI assisted and how outputs were verified.
 
-## Product Finance deep-dive additions
-- `docs/portfolio/Investment_Memo.md` — concise investment recommendation and capital gates.
-- `docs/finance/decision_grade_model.md` — adoption-adjusted economics, model definitions and downside discipline.
-- The recruiter-facing workbook includes an `Adoption Economics` sheet; the monthly plan links its effective win-back directly to adoption × incremental lift assumptions.
+## Five-minute review
 
-## New role evidence packs
-- Project Manager: `docs/pm/schedule_and_critical_path.md` (computed Gantt and critical path), `docs/pm/raci_tasks.md`, `raid_log.md`, `change_control_and_communications.md`, `status_reports_templates.md` and `resourcing_effort.md`.
-- APM / PM: `docs/product/apm_pm_decision_pack.md`.
-- Consulting: `docs/consulting/consulting_challenge_pack.md`; slides 8, 14 and 15 of the deck (option weights, red team, what would change my mind).
-- Business Analyst: `docs/ba/complete_traceability_and_process_pack.md`.
-- Finance: `docs/finance/finance_manager_reproduction_pack.md`; workbook sheets `Audit Checks` and `Tornado`; chart `docs/finance/tornado.png`.
-- Claim ledger: `docs/portfolio/evidence_ledger.md`. Developer-run task script (no people involved): `docs/validation/developer_task_run.md`. Blank validation templates and the independent UAT protocol (not executed): `docs/validation/`, `docs/ba/independent_uat_and_signoff_protocol.md`.
+1. `docs/portfolio/one_page_brief.md`: decision, numbers, what would change the answer
+2. `docs/portfolio/evidence_ledger.md`: claim traceability
+3. `model/MarginLadder_Monthly_FP&A_Model.xlsx`: Inputs, Monthly Plan, Tornado, Audit Checks
+4. `docs/finance/decision_bridge.md`, `docs/finance/model_audit.md` and `docs/finance/decision_layer_report.md`
+5. `docs/validation/ui_workflow_check.md`: browser workflow test, with what it does and does not prove
+6. Role lens (optional): `docs/portfolio/role_paths/`. The full earlier README is `docs/portfolio/README_extended.md`.
 
-All status, research, consent and UAT templates remain empty. No participant session, sign-off, live deployment or financial benefit is claimed.
+## Next step that would matter most
+
+Interview three to five real estimators, sales or finance staff, log them with
+`data/templates/discovery_interview_log_template.csv`, and re-run the model on observed stage times.
+See `docs/portfolio/validation_plan.md`.

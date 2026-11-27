@@ -1,5 +1,42 @@
 # Change log
 
+## 3.5.0 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| `realdata/` package and `docs/finance/real_company_benchmark.md`: Bharat Forge FY26 audited consolidated filing, recomputed ratios, DuPont, cash cycle, segment margins, dated valuation | The case was fully synthetic; the ledger had an open item for checking an annual report |
+| Working-capital stress test: case financials re-run with real receivable days and cash cycle (IRR 75.8% to 44.4% and 28.4%) | 45 days was the case input furthest from the real reference |
+| `engine/input_guard.py`, wired into `create_quote`: gross and net weight must be above zero | The retained v1 engine never range-checked them; `net = -1` priced at about half the normal price |
+| `gst` is now an accepted part input | It was filtered out, so every quote used 18% whatever was sent |
+| 4 engine test functions, 2 service regression test functions (one over 3 cases) and 12 realdata tests | The guard and gst tests fail on the old code; the realdata tests pin each sourced figure |
+| Superseded v1/v2 traceability and regression docs moved to `docs/archive/`; manifest re-keyed with the same hashes | `docs/` had five regression reports and three traceability versions side by side |
+| `realdata` added to pytest, mypy, ruff, coverage and CI | New code gets the same gates as the rest |
+
+## 3.4.8 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| `engine/tier_pricing.py` wired into `create_quote` | TIER_RATES was never used by the workflow; tiers now price at 117.33 / 116.51 / 115.77 (rate date 2026-11-05) |
+| Customer-hold narrative reads SQL columns by name; regenerated `docs/analytics/sql_findings.md` | Off-by-one printed "present on 60 of 60" with zero holds |
+| Regression tests: service, engine tier module, API-level (not run here), narrative | Each fails on the old code |
+| `engine` added to pytest testpaths, ruff and mypy scope | Existing engine tests were never collected |
+| `scripts/e2e_ui_check.py` gains HTTP tier-price assertions; validation docs regenerated (34 of 34) | Current results |
+
+## 3.4.7 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| `finance/unit_economics.py`: volume-tier bands, tier comparison, cost-line shares, unit-cost sensitivity, break-even volume | Engine had no tier lookup or decision layer; boundaries were untested |
+| `finance/scenarios.py`: downside / base / upside and NPV break-even win-back | Named scenarios and a decision threshold were missing |
+| 43 tests (196 pass, API tests excluded) and generated `docs/finance/decision_layer_report.md` | Reproducible, tested outputs |
+| 15 ruff and 5 mypy errors fixed, behaviour unchanged | CI expects both clean |
+| `docs/validation/improvement_pass_report.md` | Before and after, what ran, what did not |
+| `scripts/e2e_ui_check.py` and `docs/validation/ui_workflow_check.md` | Browser test of the full RFQ workflow (33 of 33 steps) against a stand-in for server.py; evidence boundary stated |
+
+## 3.4.6 (portfolio release; application version stays 3.3.0)
+| Change | Why |
+|---|---|
+| README rewritten: finance-led, 82 lines, scope disclosure at the top; long version kept at `docs/portfolio/README_extended.md` | README failed the repository's own consistency checks and listed a non-existent `tests/` folder |
+| `data/simulated_rfq_log.csv` restored to original CRLF line endings; `.gitattributes` pins it | Byte-identity check failed after the zip normalised line endings |
+| Added `one_page_brief.md`, `validation_plan.md`, `resume_and_interview.md` under `docs/portfolio/` | One-page summary, plan for real interviews, resume and interview preparation |
+
 ## 3.4.5 (portfolio release; application version stays 3.3.0)
 | Change | Why |
 |---|---|
