@@ -1,5 +1,19 @@
 # Change log
 
+## 5.0.0 (data-driven pricing clarification)
+| Change | Why |
+|---|---|
+| Added `engine/pricing_schedule.py` | Separates all-units from marginal-band pricing instead of treating the two commercial terms as equivalent. |
+| Stored method, bands, annual revenue, annual cost and contribution in each quote snapshot | Makes approval and dashboard totals reproducible and reviewable. |
+| Added pricing-method control and visible schedule disclosure in the local UI | An estimator must choose the contract interpretation. |
+| Added schedule and service regression tests | Pins inclusive boundaries, no implicit extrapolation, arithmetic and invalid-mode handling. |
+| Added `docs/finance/tier_pricing_methods.md` and this validation report | Distinguishes illustrative project inputs, derived outputs, official benchmark data and unavailable product data. |
+| Corrected Windows path handling in the repository consistency check | Immutable raw files were incorrectly included in stale-text scans because the manifest uses `/` and Windows returns `\\`. |
+| Cleared static-analysis findings in the touched release baseline | Lint now covers the schedule addition and existing package checks cleanly. |
+| Corrected the mypy test-file exclusion pattern | Source modules are type-checked; test modules remain exercised by pytest rather than treated as production typing targets. |
+
+Raw project data remains unchanged. Bharat Forge FY2025–26 figures remain in the separate `realdata/` benchmark and are not used as product-level price, cost or volume inputs.
+
 ## 3.5.0 (portfolio release; application version stays 3.3.0)
 | Change | Why |
 |---|---|

@@ -23,6 +23,7 @@ from tracekit import analyze as trace_analyze
 from engine.cost_engine import CostError, MASTER, SAMPLE, TIER_VOLUMES, cost_part, needs_sales_head
 from engine.input_guard import validate_part_inputs
 from engine.tier_pricing import tier_master
+from engine.pricing_schedule import ALL_UNITS, VALID_MODES, annual_schedule
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = Path(os.getenv("MARGINLADDER_DB", Path(__file__).resolve().parent / "data" / "marginladder.db"))
@@ -160,7 +161,7 @@ def utc_now() -> str:
 def _json_default(value: Any) -> str:
     if isinstance(value, Decimal):
         return str(value)
-    if isinstance(value, (date, datetime)):
+    if isinstance(value, date | datetime):
         return value.isoformat()
     raise TypeError(f"Cannot JSON-serialise {type(value).__name__}")
 
@@ -469,8 +470,17 @@ class MarginLadderService:
         selected_volume = int(payload.get("selected_volume", 180000))
         if selected_volume not in TIER_VOLUMES:
             raise ServiceError(f"Selected volume must be one of {', '.join(map(str, TIER_VOLUMES))}")
+        pricing_mode = str(payload.get("pricing_mode", ALL_UNITS))
+        if pricing_mode not in VALID_MODES:
+            raise ServiceError(f"Pricing mode must be one of {', '.join(sorted(VALID_MODES))}")
         selected = next(t for t in tiers if t["annual_volume_per_part"] == selected_volume)
-        annual_value = Decimal(str(selected["annual_value"]))
+        try:
+            schedule = annual_schedule(tiers, selected_volume, pricing_mode)
+        except CostError as exc:
+            raise ServiceError(str(exc)) from exc
+        # Annual value is commercial annual revenue under the selected schedule.
+        # All-units retains the prior result; marginal pricing is explicitly a separate assumption.
+        annual_value = Decimal(str(schedule["annual_revenue"]))
         # Demo convention: approval threshold uses annual selling value excluding GST.
         # The brief does not specify the GST basis; confirm with the business before pilot.
         approval_required = needs_sales_head(annual_value, APPROVAL_THRESHOLD)
@@ -482,6 +492,8 @@ class MarginLadderService:
             "formula_version": "v1.0",
             "quote_date": quote_date.isoformat(),
             "selected_volume": selected_volume,
+            "pricing_mode": pricing_mode,
+            "pricing_schedule": schedule,
             "approval_threshold_inr": str(APPROVAL_THRESHOLD),
             "approval_required": approval_required,
             "parts": parts,
@@ -497,7 +509,7 @@ class MarginLadderService:
             )
             con.execute("UPDATE rfqs SET status=?,updated_at=? WHERE id=?", (status, now, rfq_id))
             self._audit(con, "quote", quote_id, "quote_costed", actor, role,
-                        {"rfq_id": rfq_id, "version": version, "selected_volume": selected_volume,
+                        {"rfq_id": rfq_id, "version": version, "selected_volume": selected_volume, "pricing_mode": pricing_mode,
                          "annual_value": str(annual_value), "approval_required": approval_required,
                          "formula_version": "v1.0"})
             if approval_required:

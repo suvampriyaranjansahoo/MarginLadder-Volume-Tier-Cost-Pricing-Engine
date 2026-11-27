@@ -13,7 +13,7 @@ def test_manual_first_operating_month_reconciles_to_model():
                               annual_run_cost=1200, implementation_capex=500, dso=36.5, dio=36.5, dpo=18.25, years=1)
     row = monthly_cash_flow(inputs)[1]
     # 20 orders/year -> 20,000 annual revenue -> 1,666.67/month; COGS 1,250/month.
-    revenue, cogs = 20_000 / 12, 15_000 / 12
+    revenue = 20_000 / 12
     ar, inventory, ap = 20_000 * 36.5 / 365, 15_000 * 36.5 / 365, 15_000 * 18.25 / 365
     expected_nwc = ar + inventory - ap
     expected_ocf = ((5_000 / 12) - 100) * .75

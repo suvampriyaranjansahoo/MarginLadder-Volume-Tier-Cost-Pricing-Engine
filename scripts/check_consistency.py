@@ -153,7 +153,10 @@ def banned() -> None:
     manifest = json.loads(text("scripts/original_manifest.json"))
     untouched = {rel for rel in manifest["v2_0_sha256"] if rel not in manifest["logged_changes"]}
     for label, pat in patterns.items():
-        pool = [p for p in docs if not (label in stale and str(p.relative_to(ROOT)) in untouched)]
+        # The manifest is stored with POSIX separators even when the validation
+        # runs on Windows.  Keep immutable baseline files out of stale-text
+        # scans without relying on the host path separator.
+        pool = [p for p in docs if not (label in stale and p.relative_to(ROOT).as_posix() in untouched)]
         hits = [str(p.relative_to(ROOT)) for p in pool if re.search(pat, p.read_text(encoding="utf-8", errors="ignore"))]
         check(f"no '{label}' anywhere", not hits, ", ".join(hits[:3]))
     check("no database files", not files("*.db"))
@@ -243,7 +246,9 @@ def negatives(n: dict) -> None:
 
 # 8. Python twin still matches Excel
 def reconcile() -> None:
-    out = subprocess.run([sys.executable, "-B", "-m", "finance.reconcile"], cwd=ROOT, capture_output=True, text=True, check=False)
+    out = subprocess.run(  # noqa: S603 -- fixed interpreter and fixed local module, not user input
+        [sys.executable, "-B", "-m", "finance.reconcile"], cwd=ROOT, capture_output=True, text=True, check=False
+    )
     check("Excel and Python agree on every cell", out.returncode == 0 and "64 of 64" in out.stdout, out.stdout.strip().splitlines()[-1] if out.stdout else out.stderr[-200:])
 
 

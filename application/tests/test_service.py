@@ -280,3 +280,19 @@ def test_quote_uses_the_gst_rate_that_was_sent(svc):
     quote = svc.create_quote(rfq["id"], {"quote_date": "2026-11-05", "parts": [{"description": "x", "gst": "0.05"}]}, "Aditi", "estimator")
     result = quote["snapshot"]["tiers"][1]["lines"][0]["result"]
     assert Decimal(result["gst"]) == (Decimal(result["price"]) * Decimal("0.05")).quantize(Decimal("0.01"))
+
+
+def test_marginal_schedule_is_stored_and_changes_annual_value_not_unit_cost(svc):
+    rfq = _costing_rfq(svc)
+    quote = svc.create_quote(rfq["id"], {"quote_date": "2026-11-05", "selected_volume": 180000, "pricing_mode": "marginal"}, "Aditi", "estimator")
+    schedule = quote["snapshot"]["pricing_schedule"]
+    assert schedule["pricing_mode"] == "marginal"
+    assert Decimal(quote["annual_value"]) == Decimal("21045600.00")
+    assert Decimal(schedule["selected_tier_unit_cost"]) == Decimal("102.53")
+    assert len(schedule["bands"]) == 2
+
+
+def test_unknown_pricing_mode_is_rejected(svc):
+    rfq = _costing_rfq(svc)
+    with pytest.raises(ServiceError, match="Pricing mode"):
+        svc.create_quote(rfq["id"], {"pricing_mode": "mixed"}, "Aditi", "estimator")

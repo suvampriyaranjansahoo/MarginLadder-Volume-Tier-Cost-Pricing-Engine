@@ -1,0 +1,37 @@
+MarginLadder v5.0 validation evidence
+Run date: 2026-11-27
+
+Executed successfully in the packaged repository:
+
+1. python -m pytest
+   Result: 292 passed, 1 third-party Starlette deprecation warning.
+
+2. python engine/cost_engine.py
+   Result: 24/24 built-in deterministic costing checks passed.
+
+3. python -m finance.reconcile
+   Result: 64/64 Excel and Python cells match.
+
+4. python -m realdata.benchmark
+   Result: regenerated the separate Bharat Forge FY2025-26 benchmark report from its stored official-filing inputs.
+
+5. python scripts/check_consistency.py
+   Result: 756/756 checks passed, including raw-file integrity checks.
+
+6. python scripts/portfolio_release_audit.py
+   Result: 26/26 checks passed.
+
+7. python scripts/check_role_packs.py
+   Result: 20/20 checks passed.
+
+8. ruff check .
+   Result: all checks passed.
+
+9. mypy
+   Result: no issues in 42 source files. Test modules are exercised by pytest and intentionally excluded from the production-source type-check scope.
+
+New v5 regression coverage includes both pricing methods: all-units and marginal bands, inclusive band boundaries, no volume extrapolation, persisted schedule arithmetic, and invalid-method rejection.
+
+Not represented as completed:
+- A native Excel/LibreOffice recalculation of a marginal schedule. Existing workbook parity remains all-units only.
+- Production deployment, ERP integration, customer contract review, user acceptance testing or product-level Bharat Forge economics.

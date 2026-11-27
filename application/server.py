@@ -127,6 +127,7 @@ class PartInput(BaseModel):
 class CreateQuoteRequest(BaseModel):
     quote_date: str | None = None
     selected_volume: int = 180000
+    pricing_mode: str = "all_units"
     parts: list[PartInput] = Field(default_factory=list, max_length=50)
 
 
