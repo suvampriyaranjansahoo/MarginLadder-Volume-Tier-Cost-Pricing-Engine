@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # MarginLadder
 ### Should a manufacturer fund RFQ-to-quote automation? A modelled investment case, with a working prototype.
 
